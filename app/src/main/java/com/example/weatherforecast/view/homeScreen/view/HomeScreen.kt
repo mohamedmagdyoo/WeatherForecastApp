@@ -1,4 +1,4 @@
-package com.example.weatherforecast.view.alertScreen
+package com.example.weatherforecast.view.homeScreen.view
 
 import android.annotation.SuppressLint
 import android.util.Log
@@ -14,8 +14,27 @@ import com.example.weatherforecast.utils.AppConstants
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 
+
+@SuppressLint("CoroutineCreationDuringComposition")
 @Composable
-fun AlertScreen(modifier: Modifier = Modifier) {
+fun HomeScreen(modifier: Modifier = Modifier) {
+    val weatherRepo = WeatherRepo()
+
+    GlobalScope.launch {
+        val currentWeather = weatherRepo.getCurrentWeather(
+            lat = 8.0,
+            lon = 8.0
+        )
+
+        if(currentWeather.isSuccess){
+            val data = currentWeather.getOrNull()
+            Log.d(AppConstants.TAG, "HomeScreen: ${data?.name} ")
+        }else{
+            Log.d(AppConstants.TAG, "HomeScreen: $currentWeather ")
+        }
+
+    }
+
 
     Column(
         modifier
@@ -23,6 +42,6 @@ fun AlertScreen(modifier: Modifier = Modifier) {
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text(text = "AlertScreen")
+        Text(text = "HomeScreen")
     }
 }
