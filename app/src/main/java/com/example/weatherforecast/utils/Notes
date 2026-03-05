@@ -1,0 +1,16 @@
+Error Codes
+200  → Success
+400  → Bad request (invalid or missing parameters)
+401  → Unauthorized (API key missing, wrong, or not activated)
+404  → Not found (resource does not exist)
+429  → Too many requests (rate limit exceeded)
+500  → Server error (problem on Server side)
+503  → Service unavailable (server temporarily down)
+NET  → Network error (no internet, timeout, DNS failure)
+=========================================================================================
+
+/*
+* we put @Serializable cause Navigation needs to serialize that object into a (string)
+* navController.navigate(Screens.HomeScreen)
+* */
+=========================================================================================
