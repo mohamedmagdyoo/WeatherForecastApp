@@ -74,9 +74,9 @@ fun ForecastResponse.toForecastResult(): ForecastResult {
                 day = day.toDayName(),
                 minTemp = items.minOf { it.main.tempMin },
                 maxTemp = items.maxOf { it.main.tempMax },
-                icon = items[4].weather.firstOrNull()?.icon
+                icon = items[2].weather.firstOrNull()?.icon
                     ?: items.first().weather.firstOrNull()?.icon ?: "",
-                description = items[4].weather.firstOrNull()?.description
+                description = items[2].weather.firstOrNull()?.description
                     ?: items.first().weather.firstOrNull()?.description ?: ""
             )
         }
