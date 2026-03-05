@@ -1,7 +1,5 @@
 package com.example.weatherforecast.view.alertScreen
 
-import android.annotation.SuppressLint
-import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -9,10 +7,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import com.example.weatherforecast.data.weather.WeatherRepo
-import com.example.weatherforecast.utils.AppConstants
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
 
 @Composable
 fun AlertScreen(modifier: Modifier = Modifier) {
