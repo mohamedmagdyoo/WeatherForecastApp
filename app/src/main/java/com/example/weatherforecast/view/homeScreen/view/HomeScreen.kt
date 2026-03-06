@@ -49,7 +49,6 @@ fun HomeScreen(modifier: Modifier = Modifier) {
 
         HomeScreenState.Loading -> {
             OnLoading(modifier = modifier)
-
         }
 
         is HomeScreenState.Success -> {

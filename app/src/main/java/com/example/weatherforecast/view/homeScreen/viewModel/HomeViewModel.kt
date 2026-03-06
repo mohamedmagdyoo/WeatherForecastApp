@@ -10,30 +10,27 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.setValue
-import kotlinx.coroutines.delay
 
 
-class HomeViewModel(val weatherRepo: WeatherRepo) : ViewModel() {
+class HomeViewModel(private val weatherRepo: WeatherRepo) : ViewModel() {
 
     private val _screenState = MutableStateFlow<HomeScreenState>(HomeScreenState.Loading)
     val screenState = _screenState.asStateFlow()
 
     init {
-        getScreenData()
+        getScreenData(30.5,30.5)
+//        getScreenData(5.5,5.5)
     }
 
-    fun getScreenData() {
-        try {
-            viewModelScope.launch {
-
+    fun getScreenData(lat: Double, lon: Double, lang: String = "", unit: String = "") {
+        viewModelScope.launch {
+            try {
                 val job1 = async {
-                    weatherRepo.getCurrentWeather(5.5, 5.5)
+                    weatherRepo.getCurrentWeather(lat, lon)
                 }
 
                 val job2 = async {
-                    weatherRepo.getForecast(5.5, 5.5)
+                    weatherRepo.getForecast(lat, lon)
                 }
 
                 val currentWeather = job1.await()
@@ -47,9 +44,11 @@ class HomeViewModel(val weatherRepo: WeatherRepo) : ViewModel() {
                         ?: forecast.exceptionOrNull()
                     _screenState.value = HomeScreenState.Error(error?.message ?: "unknown error")
                 }
+            } catch (ex: Exception) {
+                val error = ex.message.toString()
+                _screenState.value = HomeScreenState.Error(error)
+                Log.d(AppConstants.TAG, "getScreenData Exception: $error ")
             }
-        } catch (ex: Exception) {
-            Log.d(AppConstants.TAG, "getScreenData Exception: ${ex.message} ")
         }
     }
 
