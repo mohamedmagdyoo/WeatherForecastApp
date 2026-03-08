@@ -1,12 +1,13 @@
 package com.example.weatherforecast.view.homeScreen.viewModel
 
-import com.example.weatherforecast.data.weather.dataSource.remote.model.forcast.ForecastResult
-import com.example.weatherforecast.data.weather.dataSource.remote.model.weather.CurrentWeatherResponse
+import com.example.weatherforecast.data.weather.dataSource.local.entity.CurrentWeatherEntity
+import com.example.weatherforecast.data.weather.dataSource.remote.dto.forcast.ForecastResult
+import com.example.weatherforecast.data.weather.dataSource.remote.dto.weather.CurrentWeatherResponse
 
 sealed class HomeScreenState {
     object Loading : HomeScreenState()
     data class Success(
-        val currentWeather: CurrentWeatherResponse,
+        val currentWeather: CurrentWeatherEntity,
         val forecastResult: ForecastResult
     ) : HomeScreenState()
 

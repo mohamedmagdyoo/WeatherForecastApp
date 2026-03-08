@@ -1,14 +1,14 @@
 package com.example.weatherforecast.data.weather.dataSource.remote
 
 import com.example.weatherforecast.data.network.RetrofitHelper
-import com.example.weatherforecast.data.weather.dataSource.remote.model.forcast.ForecastResponse
-import com.example.weatherforecast.data.weather.dataSource.remote.model.weather.CurrentWeatherResponse
+import com.example.weatherforecast.data.network.service.WeatherApiService
+import com.example.weatherforecast.data.weather.dataSource.local.entity.LatLonEntity
+import com.example.weatherforecast.data.weather.dataSource.remote.dto.forcast.ForecastResponse
+import com.example.weatherforecast.data.weather.dataSource.remote.dto.weather.CurrentWeatherResponse
 import com.example.weatherforecast.utils.AppConstants
 
-class WeatherRemoteDataSource {
-    val weatherApiService = RetrofitHelper.weatherService
-
-    suspend fun getCurrentWeather(
+class WeatherRemoteSource(private val weatherApiService: WeatherApiService) : WeatherRemoteSourceInterface {
+    override suspend fun getCurrentWeather(
         lat: Double,
         lon: Double,
         unit: String,
@@ -32,7 +32,7 @@ class WeatherRemoteDataSource {
         }
     }
 
-    suspend fun getForecast(
+    override suspend fun getForecast(
         lat: Double,
         lon: Double,
         unit: String,
@@ -56,4 +56,5 @@ class WeatherRemoteDataSource {
 
         }
     }
+
 }

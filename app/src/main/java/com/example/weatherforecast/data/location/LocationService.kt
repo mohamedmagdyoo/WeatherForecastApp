@@ -13,28 +13,27 @@ import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlin.coroutines.resume
 
 class LocationService(val context: Activity) {
-
     companion object {
         const val REQUEST_LOCATION_CODE = 2026
     }
-
     val fusedClint = LocationServices.getFusedLocationProviderClient(context)
-    val sp = AppPreferences(context)
+    val appPreferences = AppPreferences.getInstance(context)
 
     @SuppressLint("MissingPermission")
-    suspend fun getLastLocation(): LocationResultStates {
+    suspend fun tryGetLastLocation(): LocationResultStates {
+
         if (!isGPSEnabled()) {
             return LocationResultStates.GpsDisabled
         }
         if (!checkLocationPermeation()) {
             return LocationResultStates.PermissionDenied
         }
-
+        // i used suspendCancellableCoroutine to convert from callback to coroutine
         val state = suspendCancellableCoroutine { task ->
             fusedClint.lastLocation
                 .addOnSuccessListener { location ->
                     if (location != null) {
-                        sp.saveLocation(location)
+                        appPreferences.saveLocation(location)
                         task.resume(LocationResultStates.Success(location))
                     } else {
                         task.resume(LocationResultStates.LocationNull)

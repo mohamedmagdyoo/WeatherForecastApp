@@ -1,92 +1,79 @@
 package com.example.weatherforecast.data.weather
 
-import com.example.weatherforecast.data.weather.dataSource.remote.WeatherRemoteDataSource
-import com.example.weatherforecast.data.weather.dataSource.remote.model.forcast.DailyForecast
-import com.example.weatherforecast.data.weather.dataSource.remote.model.forcast.ForecastResponse
-import com.example.weatherforecast.data.weather.dataSource.remote.model.forcast.ForecastResult
-import com.example.weatherforecast.data.weather.dataSource.remote.model.forcast.HourlyForecast
-import com.example.weatherforecast.data.weather.dataSource.remote.model.weather.CurrentWeatherResponse
-import java.text.SimpleDateFormat
-import java.util.Locale
+import android.location.Location
+import android.util.Log
+import com.example.weatherforecast.data.weather.dataSource.local.WeatherLocalSourceInterface
+import com.example.weatherforecast.data.weather.dataSource.local.entity.CurrentWeatherEntity
+import com.example.weatherforecast.data.weather.dataSource.local.entity.LatLonEntity
+import com.example.weatherforecast.data.weather.dataSource.local.mappers.toEntity
+import com.example.weatherforecast.data.weather.dataSource.local.mappers.toEntityList
+import com.example.weatherforecast.data.weather.dataSource.local.mappers.toForecastResult
+import com.example.weatherforecast.data.weather.dataSource.remote.WeatherRemoteSourceInterface
+import com.example.weatherforecast.data.weather.dataSource.remote.dto.forcast.ForecastResult
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 
-class WeatherRepo {
-    val remote = WeatherRemoteDataSource()
+class WeatherRepo(
+    private val remote: WeatherRemoteSourceInterface,
+    private val local: WeatherLocalSourceInterface
+) : WeatherRepoInterface {
 
-    suspend fun getCurrentWeather(
-        lat: Double,
-        lon: Double,
-        unit: String = "metric",
-        lang: String = "en"
-    ): Result<CurrentWeatherResponse> {
-        return remote.getCurrentWeather(
-            lat = lat,
-            lon = lon,
-            unit = unit,
-            lang = lang,
-        )
+
+    override fun getCurrentWeather(): Flow<CurrentWeatherEntity?> {
+        return local.getCurrentWeather()
     }
 
-    suspend fun getForecast(
+    override fun getForecast(): Flow<ForecastResult> {
+        return local.getForecast()
+            .map { entities -> entities.toForecastResult() }
+    }
+
+
+    override suspend fun refreshWeatherData(
         lat: Double,
         lon: Double,
-        unit: String = "metric",
-        lang: String = "en"
-    ): Result<ForecastResult> {
-        val result = remote.getForecast(
-            lat = lat,
-            lon = lon,
-            unit = unit,
-            lang = lang
-        )
+        unit: String,
+        lang: String
+    ): Result<Unit> {
+        return try {
+            val currentWeatherResult = remote.getCurrentWeather(lat, lon, unit, lang)
+            val forecastResult = remote.getForecast(lat, lon, unit, lang)
 
-        if (result.isSuccess) {
-            val data = result.getOrNull() ?: return Result.failure<ForecastResult>(
-                Exception("Wrong with mapping")
-            )
-            val dataAfterMapping = data.toForecastResult()
-
-            return Result.success(dataAfterMapping)
-        } else {
-            return Result.failure<ForecastResult>(Exception("Wrong with mapping"))
+            if (currentWeatherResult.isSuccess && forecastResult.isSuccess) {
+                local.insertCurrentWeather(
+                    currentWeatherResult.getOrThrow().toEntity(lat,lon)
+                )
+                local.insertForecasts(
+                    forecastResult.getOrThrow().toEntityList(lat, lon)
+                )
+                Result.success(Unit)
+            } else {
+                val error = currentWeatherResult.exceptionOrNull()
+                    ?: forecastResult.exceptionOrNull()
+                Result.failure(error ?: Exception("Unknown error"))
+            }
+        } catch (e: Exception) {
+            Result.failure(e)
         }
     }
-}
 
-fun ForecastResponse.toForecastResult(): ForecastResult {
 
-    val listOfHours = list
-        .take(8)
-        .map { item ->
-            HourlyForecast(
-                time = item.dtTxt.substring(11, 16),
-                temp = item.main.temp,
-                icon = item.weather.firstOrNull()?.icon ?: "",
-                description = item.weather.firstOrNull()?.description ?: ""
-            )
-        }
+    override suspend fun isCacheStale(): Boolean {
+        val cachedAt = local.getLastCurrentWeatherCachedAt() ?: return true
+        val thirtyMinutes = 30 * 60 * 1000L
+        return System.currentTimeMillis() - cachedAt > thirtyMinutes
+    }
 
-    val listOfDays = list
-        .groupBy { item ->
-            item.dtTxt.substring(0, 10) //2024-03-10
-        }
-        .map { (day, items) ->
-            DailyForecast(
-                day = day.toDayName(),
-                minTemp = items.minOf { it.main.tempMin },
-                maxTemp = items.maxOf { it.main.tempMax },
-                icon = items.firstOrNull()?.weather?.firstOrNull()?.icon
-                    ?: items.first().weather.firstOrNull()?.icon ?: "",
-                description = items.firstOrNull()?.weather?.firstOrNull()?.description
-                    ?: items.first().weather.firstOrNull()?.description ?: ""
-            )
-        }
-    return ForecastResult(listOfHours, listOfDays)
-}
+    override fun isLocationFarEnough(
+        oldLat: Double, oldLon: Double,
+        newLat: Double, newLon: Double
+    ): Boolean {
+        val results = FloatArray(1)
+        Location.distanceBetween(oldLat, oldLon, newLat, newLon, results)
+        return results[0] > 5000  // 5km
+    }
 
-fun String.toDayName(): String {
-    val dateFormatter = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-    val date = dateFormatter.parse(this) ?: return this
-    return SimpleDateFormat("EEEE", Locale.getDefault()).format(date)
-    //"EEEE" is the full week day pattern like sunday not sun
-    //Locale.getDefault() for lang or fonts on the user device
+    override suspend fun getSavedLatLon(): Result<LatLonEntity>? {
+        return local.getSavedLatLon()
+    }
 }

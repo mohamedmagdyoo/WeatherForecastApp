@@ -1,7 +1,7 @@
-package com.example.weatherforecast.data.weather.dataSource.remote.model.forcast
+package com.example.weatherforecast.data.weather.dataSource.remote.dto.forcast
 
-import com.example.weatherforecast.data.weather.dataSource.remote.model.weather.Main
-import com.example.weatherforecast.data.weather.dataSource.remote.model.weather.WeatherDescription
+import com.example.weatherforecast.data.weather.dataSource.remote.dto.weather.Main
+import com.example.weatherforecast.data.weather.dataSource.remote.dto.weather.WeatherDescription
 import com.google.gson.annotations.SerializedName
 data class ForecastResponse(
     @SerializedName("list") val list: List<ForecastItem>,

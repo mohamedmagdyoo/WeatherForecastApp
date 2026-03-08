@@ -2,10 +2,15 @@ package com.example.weatherforecast.data.weather.dataSource.local.mappers
 
 import com.example.weatherforecast.data.weather.dataSource.local.entity.CurrentWeatherEntity
 import com.example.weatherforecast.data.weather.dataSource.local.entity.ForecastEntity
-import com.example.weatherforecast.data.weather.dataSource.remote.model.forcast.ForecastResponse
-import com.example.weatherforecast.data.weather.dataSource.remote.model.weather.CurrentWeatherResponse
+import com.example.weatherforecast.data.weather.dataSource.remote.dto.forcast.DailyForecast
+import com.example.weatherforecast.data.weather.dataSource.remote.dto.forcast.ForecastResponse
+import com.example.weatherforecast.data.weather.dataSource.remote.dto.forcast.ForecastResult
+import com.example.weatherforecast.data.weather.dataSource.remote.dto.forcast.HourlyForecast
+import com.example.weatherforecast.data.weather.dataSource.remote.dto.weather.CurrentWeatherResponse
+import java.text.SimpleDateFormat
+import java.util.Locale
 
-fun CurrentWeatherResponse.toEntity(): CurrentWeatherEntity {
+fun CurrentWeatherResponse.toEntity(lat: Double, lon: Double): CurrentWeatherEntity {
     return CurrentWeatherEntity(
         cityName = name,
         temp = main.temp,
@@ -17,7 +22,9 @@ fun CurrentWeatherResponse.toEntity(): CurrentWeatherEntity {
         pressure = main.pressure,
         clouds = clouds.all,
         sunrise = sys.sunrise,
-        sunset = sys.sunset
+        sunset = sys.sunset,
+        lat = lat,
+        lon = lon
     )
 }
 
@@ -36,4 +43,42 @@ fun ForecastResponse.toEntityList(lat: Double, lon: Double): List<ForecastEntity
             dt = item.dt
         )
     }
+}
+
+fun List<ForecastEntity>.toForecastResult(): ForecastResult {
+    val hourly = take(8).map { item ->
+        HourlyForecast(
+            time = item.dtTxt.substring(11, 16),
+            temp = item.temp,
+            icon = item.icon,
+            description = item.description
+        )
+    }
+
+    val daily = groupBy { item ->
+        item.dtTxt.substring(0, 10)
+    }.map { (date, items) ->
+        val middayItem = items.minByOrNull { item ->
+            val hour = item.dtTxt.substring(11, 13).toInt()
+            Math.abs(hour - 12)
+        } ?: items.first()
+
+        DailyForecast(
+            day = date.toDayName(),
+            minTemp = items.minOf { it.tempMin },
+            maxTemp = items.maxOf { it.tempMax },
+            icon = middayItem.icon,
+            description = middayItem.description
+        )
+    }
+
+    return ForecastResult(hourly, daily)
+}
+
+fun String.toDayName(): String {
+    val dateFormatter = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+    val date = dateFormatter.parse(this) ?: return this
+    return SimpleDateFormat("EEEE", Locale.getDefault()).format(date)
+    //"EEEE" is the full week day pattern like sunday not sun
+    //Locale.getDefault() for lang or fonts on the user device
 }

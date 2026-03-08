@@ -5,9 +5,9 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
-import com.example.weatherforecast.data.weather.dataSource.local.dao.CurrentWeatherDao
+import com.example.weatherforecast.data.db.dao.CurrentWeatherDao
 import com.example.weatherforecast.data.weather.dataSource.local.entity.CurrentWeatherEntity
-import com.example.weatherforecast.data.weather.dataSource.local.dao.ForecastDao
+import com.example.weatherforecast.data.db.dao.ForecastDao
 import com.example.weatherforecast.data.weather.dataSource.local.entity.ForecastEntity
 
 @Database(

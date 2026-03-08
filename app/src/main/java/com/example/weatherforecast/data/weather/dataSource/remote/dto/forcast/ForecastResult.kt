@@ -1,4 +1,4 @@
-package com.example.weatherforecast.data.weather.dataSource.remote.model.forcast
+package com.example.weatherforecast.data.weather.dataSource.remote.dto.forcast
 
 data class ForecastResult(
     val listOfHourlyForecast: List<HourlyForecast>,

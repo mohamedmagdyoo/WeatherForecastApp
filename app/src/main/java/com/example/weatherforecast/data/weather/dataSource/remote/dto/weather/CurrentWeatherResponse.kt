@@ -1,4 +1,4 @@
-package com.example.weatherforecast.data.weather.dataSource.remote.model.weather
+package com.example.weatherforecast.data.weather.dataSource.remote.dto.weather
 
 import com.google.gson.annotations.SerializedName
 
