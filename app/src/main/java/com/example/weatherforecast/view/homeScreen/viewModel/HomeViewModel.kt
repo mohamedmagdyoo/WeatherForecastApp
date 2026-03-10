@@ -1,6 +1,5 @@
 package com.example.weatherforecast.view.homeScreen.viewModel
 
-import android.content.Context
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -8,9 +7,8 @@ import androidx.lifecycle.viewModelScope
 import com.example.weatherforecast.data.appPreferences.AppPreferences
 import com.example.weatherforecast.data.appPreferences.UserSettings
 import com.example.weatherforecast.data.weather.WeatherRepo
-import com.example.weatherforecast.data.weather.dataSource.local.entity.LatLonEntity
+import com.example.weatherforecast.data.weather.dataSource.local.entity.CurrentWeatherEntity
 import com.example.weatherforecast.utils.AppConstants
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
@@ -28,7 +26,7 @@ class HomeViewModel(
     init {
         viewModelScope.launch {
             appPreferences.settingsChanged.collect { newSettings ->
-                Log.d(AppConstants.TAG, "Collect new settings:${newSettings.location.lat} ")
+//                Log.d(AppConstants.TAG, "Collect new settings:${newSettings.toString()} ")
                 refreshData(newSettings)
                 getScreenData()
             }
@@ -45,9 +43,7 @@ class HomeViewModel(
         val result = weatherRepo.refreshWeatherData(lat, lon, unit, lang)
         if (result.isFailure) {
             Log.d(AppConstants.TAG, "refresh failed: ${result.exceptionOrNull()}")
-            _screenState.value = HomeScreenState.Error(
-                result.exceptionOrNull()?.message.toString()
-            )
+            _screenState.value = HomeScreenState.Error
         }
     }
 
@@ -58,24 +54,52 @@ class HomeViewModel(
                 weatherRepo.getForecast()
             ) { currentWeather, forecast ->
                 if (currentWeather != null) {
+                    convertWindValueIfNeed(currentWeather)
                     HomeScreenState.Success(currentWeather, forecast)
                 } else {
                     Log.d(AppConstants.TAG, "getScreenData: DB Empty")
                     HomeScreenState.Loading
                 }
             }.catch { ex ->
-                _screenState.value = HomeScreenState.Error(ex.message.toString())
+                Log.d(AppConstants.TAG, "getScreenDataEx: ${ex.message}")
+                Log.d(AppConstants.TAG, "getScreenData: DB Empty")
+                _screenState.value = HomeScreenState.Error
             }.collect { state ->
                 _screenState.value = state
             }
         }
     }
 
-//    fun workWithMockData() {
-//        viewModelScope.launch {
-//            refreshData(appPreferences.getUserSettings())
-//        }
-//    }
+
+    private fun convertWindValueIfNeed(currentWeather: CurrentWeatherEntity) {
+
+        val windUnit = appPreferences.getWindUnit()      // what user wants
+        val tempUnit = appPreferences.getTempUnit()      // what API returned
+
+        val apiReturnedImperial = tempUnit == "imperial"
+        val userWantsImperial = windUnit == "imperial"
+
+        currentWeather.windSpeed = when {
+
+            // API mph -> user wants m/s
+            apiReturnedImperial && !userWantsImperial ->
+                currentWeather.windSpeed / 2.23694
+
+            // API m/s -> user wants mph
+            !apiReturnedImperial && userWantsImperial ->
+                currentWeather.windSpeed * 2.23694
+
+            else -> currentWeather.windSpeed
+        }
+    }
+
+    fun enforceRefresh() {
+        viewModelScope.launch {
+            val settings = appPreferences.getUserSettings()
+
+            refreshData(settings)
+        }
+    }
 }
 
 @Suppress("UNCHECKED_CAST")
@@ -85,3 +109,4 @@ class HomeViewModelFactory(val weatherRepo: WeatherRepo, val appPreferences: App
         return HomeViewModel(weatherRepo, appPreferences) as T
     }
 }
+

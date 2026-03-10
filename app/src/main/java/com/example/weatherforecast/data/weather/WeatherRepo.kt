@@ -41,7 +41,7 @@ class WeatherRepo(
 
             if (currentWeatherResult.isSuccess && forecastResult.isSuccess) {
                 local.insertCurrentWeather(
-                    currentWeatherResult.getOrThrow().toEntity(lat,lon)
+                    currentWeatherResult.getOrThrow().toEntity(lat, lon)
                 )
                 local.insertForecasts(
                     forecastResult.getOrThrow().toEntityList(lat, lon)
@@ -49,8 +49,7 @@ class WeatherRepo(
                 Result.success(Unit)
             } else {
                 val error = currentWeatherResult.exceptionOrNull()
-                    ?: forecastResult.exceptionOrNull()
-                Result.failure(error ?: Exception("Unknown error"))
+                Result.failure(error ?: Exception("Unknown Error"))
             }
         } catch (e: Exception) {
             Result.failure(e)

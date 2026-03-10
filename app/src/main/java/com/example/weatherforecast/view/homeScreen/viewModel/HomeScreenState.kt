@@ -11,6 +11,6 @@ sealed class HomeScreenState {
         val forecastResult: ForecastResult
     ) : HomeScreenState()
 
-    data class Error(val error: String) : HomeScreenState()
+    object Error : HomeScreenState()
 
 }

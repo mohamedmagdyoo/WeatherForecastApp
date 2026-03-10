@@ -1,5 +1,6 @@
-package com.example.weatherforecast
+package com.example.weatherforecast.view.mainActivity
 
+import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.util.Log
@@ -7,7 +8,6 @@ import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.activity.viewModels
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Icon
@@ -16,12 +16,9 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
-import androidx.lifecycle.ViewModelProvider
+import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.NavHostController
@@ -29,22 +26,15 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.example.labs.R
 import com.example.weatherforecast.data.appPreferences.AppPreferences
-import com.example.weatherforecast.data.db.WeatherDatabase
 import com.example.weatherforecast.data.location.LocationResultStates
 import com.example.weatherforecast.data.location.LocationService
-import com.example.weatherforecast.data.network.RetrofitHelper
-import com.example.weatherforecast.data.weather.WeatherRepo
-import com.example.weatherforecast.data.weather.dataSource.local.WeatherLocalSource
-import com.example.weatherforecast.data.weather.dataSource.remote.WeatherRemoteSource
 import com.example.weatherforecast.ui.theme.WeatherForecastTheme
 import com.example.weatherforecast.utils.AppConstants
-import com.example.weatherforecast.view.Screens
 import com.example.weatherforecast.view.alertScreen.AlertScreen
 import com.example.weatherforecast.view.favoritesScreen.FavScreen
 import com.example.weatherforecast.view.homeScreen.view.HomeScreen
-import com.example.weatherforecast.view.homeScreen.viewModel.HomeViewModel
-import com.example.weatherforecast.view.homeScreen.viewModel.HomeViewModelFactory
 import com.example.weatherforecast.view.settingsScreen.SettingsScreen
 import kotlinx.coroutines.launch
 
@@ -52,15 +42,13 @@ class MainActivity : ComponentActivity() {
     private companion object {
         var isAsked = false
     }
+
     private lateinit var locationService: LocationService
-    private lateinit var appPreferences: AppPreferences
-
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         locationService = LocationService(this)
-        appPreferences = AppPreferences.getInstance(this)
+        val appPreferences: AppPreferences = AppPreferences.getInstance(this)
 
         enableEdgeToEdge()
         setContent {
@@ -77,6 +65,11 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
+        lifecycleScope.launch {
+            appPreferences.languageChanged.collect { lang ->
+                recreate()
+            }
+        }
     }
 
     override fun onStart() {
@@ -85,6 +78,7 @@ class MainActivity : ComponentActivity() {
             val locationState = locationService.tryGetLastLocation()
             manageLocationState(locationState)
         }
+
     }
 
 
@@ -114,7 +108,6 @@ class MainActivity : ComponentActivity() {
         }
         Log.d(AppConstants.TAG, "onRequestPermissionsResult:REQUEST_LOCATION_CODE  ")
 
-
     }
 
     fun manageLocationState(locationState: LocationResultStates) {
@@ -123,7 +116,7 @@ class MainActivity : ComponentActivity() {
                 if (isAsked) {
                     Toast.makeText(
                         this@MainActivity,
-                        "Please enable GPS",
+                        getString(R.string.please_enable_gps),
                         Toast.LENGTH_LONG
                     ).show()
                 } else {
@@ -135,7 +128,7 @@ class MainActivity : ComponentActivity() {
             LocationResultStates.LocationNull -> {
                 Toast.makeText(
                     this@MainActivity,
-                    "Could not get location, using last known or the default location",
+                    getString(R.string.could_not_get_location_using_last_known_or_the_default_location),
                     Toast.LENGTH_SHORT
                 ).show()
             }
@@ -144,7 +137,7 @@ class MainActivity : ComponentActivity() {
                 if (isAsked) {
                     Toast.makeText(
                         this@MainActivity,
-                        "Location permission needed, will use the default location or the last known",
+                        getString(R.string.location_permission_needed_will_use_the_default_location_or_the_last_known),
                         Toast.LENGTH_LONG
                     ).show()
                 } else {
@@ -152,17 +145,24 @@ class MainActivity : ComponentActivity() {
                     locationService.getLocationPermeation()
                 }
 
-                appPreferences.notifyChanged()
+                AppPreferences.getInstance(this).notifyChanged()
+//                appPreferences.notifyChanged()
             }
 
             is LocationResultStates.Success -> {
                 Toast.makeText(
                     this@MainActivity,
-                    "Location fetched successfully",
+                    getString(R.string.location_fetched_successfully),
                     Toast.LENGTH_SHORT
                 ).show()
             }
         }
+    }
+
+    override fun attachBaseContext(newBase: Context) {
+        val lang = AppPreferences.getInstance(newBase).getLanguage()
+        val newContext = LanguageHelper.setLocale(newBase, lang)
+        super.attachBaseContext(newContext)
     }
 }
 
@@ -178,21 +178,19 @@ fun SetUpNavGraph(
         modifier = modifier
     ) {
         composable<Screens.HomeScreen> {
-            HomeScreen(
-                modifier = modifier,
-            )
+            HomeScreen()
         }
 
         composable<Screens.FavoritesScreen> {
-            FavScreen(modifier = modifier)
+            FavScreen()
         }
 
         composable<Screens.AlertsScreen> {
-            AlertScreen(modifier = modifier)
+            AlertScreen()
         }
 
         composable<Screens.Settings> {
-            SettingsScreen(modifier = modifier)
+            SettingsScreen()
         }
     }
 }
@@ -223,10 +221,10 @@ fun WeatherBottomBar(navController: NavHostController) {
                 icon = {
                     Icon(
                         if (isSelected) item.selectedIcon else item.unSelectedIcon,
-                        contentDescription = item.label
+                        contentDescription = stringResource(item.label)
                     )
                 },
-                label = { Text(text = item.label) }
+                label = { Text(text = stringResource(item.label)) }
             )
         }
     }

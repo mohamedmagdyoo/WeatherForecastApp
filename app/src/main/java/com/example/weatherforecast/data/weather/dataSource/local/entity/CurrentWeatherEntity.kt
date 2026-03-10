@@ -17,7 +17,7 @@ data class CurrentWeatherEntity(
     val description: String,
     val icon: String,
     val humidity: Int,
-    val windSpeed: Double,
+    var windSpeed: Double,
     val pressure: Int,
     val clouds: Int,
     val sunrise: Long,
