@@ -7,6 +7,8 @@ import androidx.lifecycle.viewModelScope
 import com.example.weatherforecast.data.appPreferences.AppPreferences
 import com.example.weatherforecast.data.appPreferences.toLanguageApi
 import com.example.weatherforecast.data.appPreferences.toLanguageDisplay
+import com.example.weatherforecast.data.appPreferences.toLocationSource
+import com.example.weatherforecast.data.appPreferences.toLocationSourceDisplay
 import com.example.weatherforecast.data.appPreferences.toTempUnitApi
 import com.example.weatherforecast.data.appPreferences.toTempUnitDisplay
 import com.example.weatherforecast.data.appPreferences.toWindUnitApi
@@ -31,7 +33,7 @@ class SettingsViewModel(private val prefs: AppPreferences) : ViewModel() {
             tempUnit = prefs.getTempUnit().toTempUnitDisplay(),
             windUnit = prefs.getWindUnit().toWindUnitDisplay(),
             language = prefs.getLanguage().toLanguageDisplay(),
-            locationSource = prefs.getLocationMethod(),
+            locationSource = prefs.getLocationMethod().toLocationSourceDisplay(),
             notificationsEnabled = prefs.getNotificationsEnabled()
         )
     }
@@ -51,9 +53,9 @@ class SettingsViewModel(private val prefs: AppPreferences) : ViewModel() {
         viewModelScope.launch { prefs.saveLanguage(langRes.toLanguageApi()) }
     }
 
-    fun setLocationSource(source: String) {
+    fun setLocationSource(source: Int) {
         _uiState.update { it.copy(locationSource = source) }
-        viewModelScope.launch { prefs.setLocationMethod(source) }
+        viewModelScope.launch { prefs.setLocationMethod(source.toLocationSource()) }
     }
 
     fun setNotificationsEnabled(enabled: Boolean) {

@@ -113,18 +113,8 @@ fun SettingsScreen(modifier: Modifier = Modifier) {
                 SettingsSectionCard(stringResource(R.string.location_source)) {
                     SegmentedOptionRow(
                         options = listOf(R.string.gps, R.string.map),
-                        selected = when (state.locationSource) {
-                            "GPS" -> R.string.gps
-                            else -> R.string.map
-                        },
-                        onSelect = {
-                            vm.setLocationSource(
-                                when (it) {
-                                    R.string.gps -> "GPS"
-                                    else -> "Map"
-                                }
-                            )
-                        }
+                        selected = state.locationSource,
+                        onSelect = { vm.setLocationSource(it) }
                     )
                 }
             }

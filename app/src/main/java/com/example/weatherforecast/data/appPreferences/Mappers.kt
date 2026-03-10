@@ -39,3 +39,16 @@ fun Int.toLanguageApi(): String = when (this) {
     R.string.arabic -> "ar"
     else -> "en"
 }
+
+fun Int.toLocationSource(): String = when (this) {
+    R.string.gps -> "GPS"
+    R.string.map -> "Map"
+    else -> "GPS"
+}
+
+fun String.toLocationSourceDisplay(): Int = when (this) {
+    "GPS" -> R.string.gps
+    "Map" -> R.string.map
+    else -> R.string.gps
+}
+
