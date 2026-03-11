@@ -10,7 +10,6 @@ data class FavoriteLocation(
     val lat: Double,
     val lon: Double,
     val cityName: String,
-    val countryCode: String,
 
     // Weather snapshot
     val temp: Double,

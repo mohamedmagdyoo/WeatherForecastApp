@@ -18,7 +18,7 @@ import com.example.weatherforecast.data.weather.dataSource.local.entity.Forecast
         ForecastEntity::class,
         FavoriteLocation::class
     ],
-    version = 2,
+    version = 3,
 )
 abstract class WeatherDatabase : RoomDatabase() {
     companion object {

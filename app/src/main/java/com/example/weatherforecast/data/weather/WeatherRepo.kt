@@ -8,6 +8,7 @@ import com.example.weatherforecast.data.weather.dataSource.local.entity.Favorite
 import com.example.weatherforecast.data.weather.dataSource.local.entity.LatLonEntity
 import com.example.weatherforecast.data.weather.dataSource.local.mappers.toEntity
 import com.example.weatherforecast.data.weather.dataSource.local.mappers.toEntityList
+import com.example.weatherforecast.data.weather.dataSource.local.mappers.toFavoriteLocation
 import com.example.weatherforecast.data.weather.dataSource.local.mappers.toForecastResult
 import com.example.weatherforecast.data.weather.dataSource.remote.WeatherRemoteSourceInterface
 import com.example.weatherforecast.data.weather.dataSource.remote.dto.forcast.ForecastResult
@@ -22,6 +23,18 @@ class WeatherRepo(
 
     override fun getCurrentWeather(): Flow<CurrentWeatherEntity?> {
         return local.getCurrentWeather()
+    }
+
+    override suspend fun getCurrentWeatherOnce(
+        lat: Double,
+        lon: Double,
+        unit: String,
+        lang: String
+    ): Result<CurrentWeatherEntity> {
+        val value = remote.getCurrentWeather(lat, lon, unit, lang).getOrNull()?.toEntity(lat, lon)
+        if (value != null)
+            return Result.success(value)
+        return Result.failure(Exception("No data"))
     }
 
     override fun getForecast(): Flow<ForecastResult> {
@@ -77,13 +90,40 @@ class WeatherRepo(
         return local.getSavedLatLon()
     }
 
+
     //Favorites
     override fun getFavorites(): Flow<List<FavoriteLocation>> {
         return local.getFavorites()
     }
 
-    override suspend fun inertFavorite(location: FavoriteLocation) {
-        local.inertFavorite(location)
+    override suspend fun insertFavorite(favLocation: FavoriteLocation) {
+        local.insertFavorite(favLocation)
+    }
+
+    override suspend fun getFavoriteLocation(
+        lat: Double,
+        lon: Double,
+        unit: String,
+        lang: String,
+        cityName: String
+    ): Result<FavoriteLocation> {
+        //1) fetch the curren weathe
+        //2) map it to favLocate entity
+        //3) save it to db
+        try {
+            val result = getCurrentWeatherOnce(lat, lon, unit, lang)
+
+            if (result.isSuccess) {
+                val currentWeather = result.getOrThrow()
+                val favoriteLocation = currentWeather.toFavoriteLocation()
+
+                return Result.success(favoriteLocation)
+            } else {
+                return Result.failure(result.exceptionOrNull()!!)
+            }
+        } catch (ex: Exception) {
+            return Result.failure(ex)
+        }
     }
 
     override suspend fun deleteFavorite(location: FavoriteLocation) {

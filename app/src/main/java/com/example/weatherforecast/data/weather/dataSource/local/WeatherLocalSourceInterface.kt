@@ -14,6 +14,7 @@ import kotlinx.coroutines.flow.Flow
 interface WeatherLocalSourceInterface {
     // Current Weather
     fun getCurrentWeather(): Flow<CurrentWeatherEntity?>
+
     suspend fun insertCurrentWeather(entity: CurrentWeatherEntity)
     suspend fun getLastCurrentWeatherCachedAt(): Long?
 
@@ -25,7 +26,7 @@ interface WeatherLocalSourceInterface {
 
     //Favorites
     fun getFavorites(): Flow<List<FavoriteLocation>>
-    suspend fun inertFavorite(location: FavoriteLocation)
+    suspend fun insertFavorite(location: FavoriteLocation)
     suspend fun deleteFavorite(location: FavoriteLocation)
-    suspend fun getFavoriteByLatLon(lat : Double, lon : Double): Result<FavoriteLocation>
+    suspend fun getFavoriteByLatLon(lat: Double, lon: Double): Result<FavoriteLocation>
 }

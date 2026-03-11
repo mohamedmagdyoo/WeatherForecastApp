@@ -7,6 +7,6 @@ data class UserSettings(
 )
 
 data class TempLocation(
-    val lat: Double,
-    val lon: Double
+    var lat: Double,
+    var lon: Double
 )

@@ -7,7 +7,17 @@ import com.example.weatherforecast.data.weather.dataSource.remote.dto.forcast.Fo
 import kotlinx.coroutines.flow.Flow
 
 interface WeatherRepoInterface {
+    //Current Weather
     fun getCurrentWeather(): Flow<CurrentWeatherEntity?>
+    suspend fun getCurrentWeatherOnce(
+        lat: Double,
+        lon: Double,
+        unit: String,
+        lang: String
+    ): Result<CurrentWeatherEntity>
+
+
+    //Forecast
     fun getForecast(): Flow<ForecastResult>
     suspend fun refreshWeatherData(
         lat: Double,
@@ -24,9 +34,19 @@ interface WeatherRepoInterface {
 
     suspend fun getSavedLatLon(): Result<LatLonEntity>?
 
+
     //Favorites
     fun getFavorites(): Flow<List<FavoriteLocation>>
-    suspend fun inertFavorite(location: FavoriteLocation)
+    suspend fun getFavoriteLocation(
+        lat: Double,
+        lon: Double,
+        unit: String,
+        lang: String,
+        cityName: String
+    ): Result<FavoriteLocation>
+
+    suspend fun insertFavorite(favLocation: FavoriteLocation)
+
     suspend fun deleteFavorite(location: FavoriteLocation)
     suspend fun getFavoriteByLatLon(lat: Double, lon: Double): Result<FavoriteLocation>
 

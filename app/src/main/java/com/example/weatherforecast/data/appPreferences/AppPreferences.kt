@@ -60,6 +60,23 @@ class AppPreferences(val context: Context) {
             Log.d(AppConstants.TAG, "failed to save location")
         }
     }
+    fun saveLocationWithLatAndLon(lat: Double, lon: Double) {
+        val result = sp.edit()
+            .putFloat("lat", lat.toFloat())
+            .putFloat("lon", lon.toFloat())
+            .commit()
+        if (result) {
+            Log.d(AppConstants.TAG, "saveLocation: Start emit ${getUserSettings().location.lat}")
+            val result2 = _settingsChanged.tryEmit(getUserSettings())
+            if (result2) {
+                Log.d(AppConstants.TAG, "saveLocation: emitted")
+            } else {
+                Log.d(AppConstants.TAG, "saveLocation: not emitted")
+            }
+        } else {
+            Log.d(AppConstants.TAG, "failed to save location")
+        }
+    }
 
     fun getLat(): Double {
         return sp.getFloat("lat", AppConstants.DEFAULT_LAT.toFloat()).toDouble()

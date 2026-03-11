@@ -25,11 +25,6 @@ class FavoritesViewModel(
         }
     }
 
-    fun insertFavorite(location: FavoriteLocation) {
-        viewModelScope.launch {
-            weatherRepo.inertFavorite(location)
-        }
-    }
 
     fun deleteFavorite(location: FavoriteLocation) {
         viewModelScope.launch {

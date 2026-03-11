@@ -10,17 +10,26 @@ import com.example.weatherforecast.data.weather.dataSource.local.entity.Forecast
 import com.example.weatherforecast.data.weather.dataSource.local.entity.LatLonEntity
 import kotlinx.coroutines.flow.Flow
 
-class WeatherLocalSource(
-    private val currentWeatherDao: CurrentWeatherDao,
-    private val forecastDao: ForecastDao,
+class WeatherLocalSource : WeatherLocalSourceInterface {
+
+    private val currentWeatherDao: CurrentWeatherDao
+    private val forecastDao: ForecastDao
     private val favoriteDao: FavoriteDao
-) : WeatherLocalSourceInterface {
+
+    constructor(
+        currentWeatherDao: CurrentWeatherDao,
+        forecastDao: ForecastDao,
+        favoriteDao: FavoriteDao
+    ) {
+        this.currentWeatherDao = currentWeatherDao
+        this.forecastDao = forecastDao
+        this.favoriteDao = favoriteDao
+    }
 
     // Current Weather
     override fun getCurrentWeather(): Flow<CurrentWeatherEntity?> {
         return currentWeatherDao.getCurrentWeather()
     }
-
 
     override suspend fun insertCurrentWeather(entity: CurrentWeatherEntity) {
         currentWeatherDao.insertCurrentWeather(entity)
@@ -59,7 +68,7 @@ class WeatherLocalSource(
         return favoriteDao.getAllFavorites()
     }
 
-    override suspend fun inertFavorite(location: FavoriteLocation) {
+    override suspend fun insertFavorite(location: FavoriteLocation) {
         favoriteDao.insertFavorite(location)
     }
 

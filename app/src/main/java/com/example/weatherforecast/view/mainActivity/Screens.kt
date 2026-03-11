@@ -11,6 +11,7 @@ import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.navigation.NavHostController
 import com.example.labs.R
 import kotlinx.serialization.Serializable
 
@@ -35,7 +36,7 @@ sealed class Screens {
         val lat: Double,
         val lon: Double,
         val cityName: String
-    ):Screens()
+    ) : Screens()
 
 
     companion object {

@@ -1,6 +1,7 @@
 package com.example.weatherforecast.data.weather.dataSource.local.mappers
 
 import com.example.weatherforecast.data.weather.dataSource.local.entity.CurrentWeatherEntity
+import com.example.weatherforecast.data.weather.dataSource.local.entity.FavoriteLocation
 import com.example.weatherforecast.data.weather.dataSource.local.entity.ForecastEntity
 import com.example.weatherforecast.data.weather.dataSource.remote.dto.forcast.DailyForecast
 import com.example.weatherforecast.data.weather.dataSource.remote.dto.forcast.ForecastResponse
@@ -81,4 +82,19 @@ fun String.toDayName(): String {
     return SimpleDateFormat("EEEE", Locale.getDefault()).format(date)
     //"EEEE" is the full week day pattern like sunday not sun
     //Locale.getDefault() for lang or fonts on the user device
+}
+
+fun CurrentWeatherEntity.toFavoriteLocation(): FavoriteLocation {
+    return FavoriteLocation(
+        lat = lat,
+        lon = lon,
+        cityName = cityName,
+        temp = temp,
+        description = description,
+        iconCode = icon,
+        humidity = humidity,
+        windSpeed = windSpeed,
+        pressure = pressure,
+        clouds = clouds
+    )
 }

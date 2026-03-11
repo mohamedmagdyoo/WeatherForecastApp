@@ -34,7 +34,7 @@ import com.example.weatherforecast.data.location.LocationService
 import com.example.weatherforecast.ui.theme.WeatherForecastTheme
 import com.example.weatherforecast.utils.AppConstants
 import com.example.weatherforecast.view.alertScreen.AlertScreen
-import com.example.weatherforecast.view.favoritesScreen.view.AddFavoriteScreen
+import com.example.weatherforecast.view.addToFavoriteScreen.view.AddFavoriteScreen
 import com.example.weatherforecast.view.favoritesScreen.view.FavoriteDetailScreen
 import com.example.weatherforecast.view.favoritesScreen.view.FavoritesScreen
 import com.example.weatherforecast.view.homeScreen.view.HomeScreen
@@ -189,7 +189,7 @@ fun SetUpNavGraph(
         }
 
         composable<Screens.AddFavoriteScreen> {
-            AddFavoriteScreen()
+            AddFavoriteScreen(navController = navController)
         }
 
         composable<Screens.FavoriteDetailScreen> { backStackEntry ->
