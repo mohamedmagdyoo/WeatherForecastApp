@@ -26,6 +26,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.toRoute
 import com.example.labs.R
 import com.example.weatherforecast.data.appPreferences.AppPreferences
 import com.example.weatherforecast.data.location.LocationResultStates
@@ -33,7 +34,9 @@ import com.example.weatherforecast.data.location.LocationService
 import com.example.weatherforecast.ui.theme.WeatherForecastTheme
 import com.example.weatherforecast.utils.AppConstants
 import com.example.weatherforecast.view.alertScreen.AlertScreen
-import com.example.weatherforecast.view.favoritesScreen.view.FavScreen
+import com.example.weatherforecast.view.favoritesScreen.view.AddFavoriteScreen
+import com.example.weatherforecast.view.favoritesScreen.view.FavoriteDetailScreen
+import com.example.weatherforecast.view.favoritesScreen.view.FavoritesScreen
 import com.example.weatherforecast.view.homeScreen.view.HomeScreen
 import com.example.weatherforecast.view.settingsScreen.view.SettingsScreen
 import kotlinx.coroutines.launch
@@ -182,7 +185,20 @@ fun SetUpNavGraph(
         }
 
         composable<Screens.FavoritesScreen> {
-            FavScreen()
+            FavoritesScreen(navController = navController)
+        }
+
+        composable<Screens.AddFavoriteScreen> {
+            AddFavoriteScreen()
+        }
+
+        composable<Screens.FavoriteDetailScreen> { backStackEntry ->
+            val args = backStackEntry.toRoute<Screens.FavoriteDetailScreen>()
+            FavoriteDetailScreen(
+                lat = args.lat,
+                lon = args.lon,
+                cityName = args.cityName
+            )
         }
 
         composable<Screens.AlertsScreen> {

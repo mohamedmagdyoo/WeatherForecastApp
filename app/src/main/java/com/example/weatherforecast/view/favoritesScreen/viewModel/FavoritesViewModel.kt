@@ -4,13 +4,14 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.example.weatherforecast.data.weather.WeatherRepo
+import com.example.weatherforecast.data.weather.WeatherRepoInterface
 import com.example.weatherforecast.data.weather.dataSource.local.entity.FavoriteLocation
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 class FavoritesViewModel(
-    private val weatherRepo: WeatherRepo
+    private val weatherRepo: WeatherRepoInterface
 ) : ViewModel() {
 
     private val _favorites = MutableStateFlow<List<FavoriteLocation>>(emptyList())

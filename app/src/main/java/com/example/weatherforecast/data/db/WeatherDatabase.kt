@@ -18,7 +18,7 @@ import com.example.weatherforecast.data.weather.dataSource.local.entity.Forecast
         ForecastEntity::class,
         FavoriteLocation::class
     ],
-    version = 1,
+    version = 2,
 )
 abstract class WeatherDatabase : RoomDatabase() {
     companion object {
@@ -31,7 +31,9 @@ abstract class WeatherDatabase : RoomDatabase() {
                     appContext.applicationContext,
                     WeatherDatabase::class.java,
                     "weather_database"
-                ).build().also {
+                )
+                    .fallbackToDestructiveMigration()
+                    .build().also {
                     INSTANCE = it
                 } // now will return the new db and init the instance then return last line
             }

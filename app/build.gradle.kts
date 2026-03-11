@@ -24,6 +24,8 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         val properties = gradleLocalProperties(rootDir, providers)
         manifestPlaceholders["MAPS_API_KEY"] = properties["MAPS_API_KEY"] ?: ""
+        buildConfigField("String", "MAPS_API_KEY", "\"${properties["MAPS_API_KEY"]}\"")
+
     }
 
     buildTypes {
@@ -45,6 +47,7 @@ android {
 
     buildFeatures {
         compose = true
+        buildConfig = true
     }
 }
 
@@ -119,6 +122,7 @@ dependencies {
 
     // Google Maps
     implementation(libs.play.services.maps)
+    implementation(libs.maps.compose)
 // Places SDK
     implementation(libs.places)
 

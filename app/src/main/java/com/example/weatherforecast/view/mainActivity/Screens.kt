@@ -27,6 +27,17 @@ sealed class Screens {
     @Serializable
     object Settings : Screens()
 
+    @Serializable
+    object AddFavoriteScreen : Screens()
+
+    @Serializable
+    data class FavoriteDetailScreen(
+        val lat: Double,
+        val lon: Double,
+        val cityName: String
+    ):Screens()
+
+
     companion object {
         val bottomBarItems = listOf(
             BottomBarItem(
