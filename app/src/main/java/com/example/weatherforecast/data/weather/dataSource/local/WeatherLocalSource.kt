@@ -2,15 +2,18 @@ package com.example.weatherforecast.data.weather.dataSource.local
 
 
 import com.example.weatherforecast.data.db.dao.CurrentWeatherDao
+import com.example.weatherforecast.data.db.dao.FavoriteDao
 import com.example.weatherforecast.data.db.dao.ForecastDao
 import com.example.weatherforecast.data.weather.dataSource.local.entity.CurrentWeatherEntity
+import com.example.weatherforecast.data.weather.dataSource.local.entity.FavoriteLocation
 import com.example.weatherforecast.data.weather.dataSource.local.entity.ForecastEntity
 import com.example.weatherforecast.data.weather.dataSource.local.entity.LatLonEntity
 import kotlinx.coroutines.flow.Flow
 
 class WeatherLocalSource(
     private val currentWeatherDao: CurrentWeatherDao,
-    private val forecastDao: ForecastDao
+    private val forecastDao: ForecastDao,
+    private val favoriteDao: FavoriteDao
 ) : WeatherLocalSourceInterface {
 
     // Current Weather
@@ -49,6 +52,26 @@ class WeatherLocalSource(
             return Result.success(value)
         }
         return Result.failure(Exception("No data"))
+    }
 
+    //Favorites
+    override fun getFavorites(): Flow<List<FavoriteLocation>> {
+        return favoriteDao.getAllFavorites()
+    }
+
+    override suspend fun inertFavorite(location: FavoriteLocation) {
+        favoriteDao.insertFavorite(location)
+    }
+
+    override suspend fun deleteFavorite(location: FavoriteLocation) {
+        favoriteDao.deleteFavorite(location)
+    }
+
+    override suspend fun getFavoriteByLatLon(lat: Double, lon: Double): Result<FavoriteLocation> {
+        val value = favoriteDao.getFavoriteByLatLon(lat, lon)
+        if (value != null) {
+            return Result.success(value)
+        }
+        return Result.failure(Exception("No data"))
     }
 }

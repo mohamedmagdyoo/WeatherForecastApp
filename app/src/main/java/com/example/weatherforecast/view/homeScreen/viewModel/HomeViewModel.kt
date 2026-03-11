@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.weatherforecast.data.appPreferences.AppPreferences
 import com.example.weatherforecast.data.appPreferences.UserSettings
 import com.example.weatherforecast.data.weather.WeatherRepo
+import com.example.weatherforecast.data.weather.WeatherRepoInterface
 import com.example.weatherforecast.data.weather.dataSource.local.entity.CurrentWeatherEntity
 import com.example.weatherforecast.utils.AppConstants
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -16,7 +17,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 
 class HomeViewModel(
-    private val weatherRepo: WeatherRepo,
+    private val weatherRepo: WeatherRepoInterface,
     private val appPreferences: AppPreferences
 ) : ViewModel() {
     private val _screenState = MutableStateFlow<HomeScreenState>(HomeScreenState.Loading)

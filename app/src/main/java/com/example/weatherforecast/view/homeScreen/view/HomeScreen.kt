@@ -229,7 +229,8 @@ fun HeaderSection(weather: CurrentWeatherEntity) {
 @Composable
 fun MainTempCard(weather: CurrentWeatherEntity) {
     Card(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+            .fillMaxWidth(),
         shape = RoundedCornerShape(24.dp),
         colors = CardDefaults.cardColors(containerColor = CardBg)
     ) {
@@ -300,7 +301,8 @@ fun StatsRow(weather: CurrentWeatherEntity) {
 @Composable
 fun StatCard(icon: String, value: String, label: String, modifier: Modifier = Modifier) {
     Card(
-        modifier = modifier,
+        modifier = modifier
+            .width(100.dp),
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(containerColor = CardBg)
     ) {

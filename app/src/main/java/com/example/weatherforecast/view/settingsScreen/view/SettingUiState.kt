@@ -1,7 +1,6 @@
-package com.example.weatherforecast.view.settingsScreen
+package com.example.weatherforecast.view.settingsScreen.view
 
 import androidx.annotation.StringRes
-import androidx.compose.ui.res.stringResource
 import com.example.labs.R
 
 

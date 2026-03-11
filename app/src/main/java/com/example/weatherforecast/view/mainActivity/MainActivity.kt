@@ -33,9 +33,9 @@ import com.example.weatherforecast.data.location.LocationService
 import com.example.weatherforecast.ui.theme.WeatherForecastTheme
 import com.example.weatherforecast.utils.AppConstants
 import com.example.weatherforecast.view.alertScreen.AlertScreen
-import com.example.weatherforecast.view.favoritesScreen.FavScreen
+import com.example.weatherforecast.view.favoritesScreen.view.FavScreen
 import com.example.weatherforecast.view.homeScreen.view.HomeScreen
-import com.example.weatherforecast.view.settingsScreen.SettingsScreen
+import com.example.weatherforecast.view.settingsScreen.view.SettingsScreen
 import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {

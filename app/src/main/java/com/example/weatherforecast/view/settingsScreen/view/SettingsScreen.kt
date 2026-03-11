@@ -1,4 +1,4 @@
-package com.example.weatherforecast.view.settingsScreen
+package com.example.weatherforecast.view.settingsScreen.view
 
 import androidx.annotation.StringRes
 import androidx.compose.foundation.background
@@ -41,6 +41,8 @@ import com.example.weatherforecast.ui.theme.DarkBlue
 import com.example.weatherforecast.ui.theme.MidBlue
 import com.example.weatherforecast.ui.theme.TextGrey
 import com.example.weatherforecast.ui.theme.TextWhite
+import com.example.weatherforecast.view.settingsScreen.viewModel.SettingsViewModel
+import com.example.weatherforecast.view.settingsScreen.viewModel.SettingsViewModelFactory
 
 @Composable
 fun SettingsScreen(modifier: Modifier = Modifier) {

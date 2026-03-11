@@ -1,4 +1,4 @@
-package com.example.weatherforecast.view.settingsScreen
+package com.example.weatherforecast.view.settingsScreen.viewModel
 
 import androidx.annotation.StringRes
 import androidx.lifecycle.ViewModel
@@ -13,6 +13,7 @@ import com.example.weatherforecast.data.appPreferences.toTempUnitApi
 import com.example.weatherforecast.data.appPreferences.toTempUnitDisplay
 import com.example.weatherforecast.data.appPreferences.toWindUnitApi
 import com.example.weatherforecast.data.appPreferences.toWindUnitDisplay
+import com.example.weatherforecast.view.settingsScreen.view.SettingsUiState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow

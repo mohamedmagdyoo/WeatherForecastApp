@@ -1,4 +1,4 @@
-package com.example.weatherforecast.view.favoritesScreen
+package com.example.weatherforecast.view.favoritesScreen.view
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column

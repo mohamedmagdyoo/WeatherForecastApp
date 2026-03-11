@@ -1,3 +1,5 @@
+import com.android.build.gradle.internal.cxx.configure.gradleLocalProperties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -20,6 +22,8 @@ android {
         versionCode = 1
         versionName = "1.0"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        val properties = gradleLocalProperties(rootDir, providers)
+        manifestPlaceholders["MAPS_API_KEY"] = properties["MAPS_API_KEY"] ?: ""
     }
 
     buildTypes {
@@ -112,5 +116,10 @@ dependencies {
     //coil
     implementation(libs.coil.compose.v250)
     implementation(libs.coil.svg)
+
+    // Google Maps
+    implementation(libs.play.services.maps)
+// Places SDK
+    implementation(libs.places)
 
 }

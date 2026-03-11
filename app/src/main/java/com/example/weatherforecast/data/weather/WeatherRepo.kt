@@ -4,6 +4,7 @@ import android.location.Location
 import android.util.Log
 import com.example.weatherforecast.data.weather.dataSource.local.WeatherLocalSourceInterface
 import com.example.weatherforecast.data.weather.dataSource.local.entity.CurrentWeatherEntity
+import com.example.weatherforecast.data.weather.dataSource.local.entity.FavoriteLocation
 import com.example.weatherforecast.data.weather.dataSource.local.entity.LatLonEntity
 import com.example.weatherforecast.data.weather.dataSource.local.mappers.toEntity
 import com.example.weatherforecast.data.weather.dataSource.local.mappers.toEntityList
@@ -74,5 +75,22 @@ class WeatherRepo(
 
     override suspend fun getSavedLatLon(): Result<LatLonEntity>? {
         return local.getSavedLatLon()
+    }
+
+    //Favorites
+    override fun getFavorites(): Flow<List<FavoriteLocation>> {
+        return local.getFavorites()
+    }
+
+    override suspend fun inertFavorite(location: FavoriteLocation) {
+        local.inertFavorite(location)
+    }
+
+    override suspend fun deleteFavorite(location: FavoriteLocation) {
+        local.deleteFavorite(location)
+    }
+
+    override suspend fun getFavoriteByLatLon(lat: Double, lon: Double): Result<FavoriteLocation> {
+        return local.getFavoriteByLatLon(lat, lon)
     }
 }
