@@ -6,15 +6,22 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import com.example.labs.BuildConfig
 import com.example.weatherforecast.data.appPreferences.AppPreferences
 import com.example.weatherforecast.data.weather.WeatherRepo
 import com.example.weatherforecast.data.weather.WeatherRepoInterface
 import com.example.weatherforecast.utils.AppConstants
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.libraries.places.api.Places
+import com.google.android.libraries.places.api.model.AutocompletePrediction
+import com.google.android.libraries.places.api.model.Place
+import com.google.android.libraries.places.api.net.FetchPlaceRequest
+import com.google.android.libraries.places.api.net.FindAutocompletePredictionsRequest
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 import java.util.Locale
 
 class AddToFavoriteViewModel(
@@ -75,11 +82,66 @@ class AddToFavoriteViewModel(
         return cityName
     }
 
+
+    // this something like retrofit but just for places
+    private val placesClient by lazy {
+        if (!Places.isInitialized()) {
+            Places.initialize(context, BuildConfig.MAPS_API_KEY)
+        }
+        Places.createClient(context)
+    }
+
+    fun onSearchQueryChange(query: String) {
+        _dataStates.update { it.copy(searchQuery = query) }
+        if (query.length < 2) {
+            _dataStates.update { it.copy(suggestions = emptyList()) }
+            return
+        }
+        viewModelScope.launch {
+            try {
+                val request = FindAutocompletePredictionsRequest.builder()
+                    .setQuery(query)
+                    .build()
+                val response = placesClient.findAutocompletePredictions(request).await()
+                _dataStates.update { it.copy(suggestions = response.autocompletePredictions) }
+            } catch (e: Exception) {
+                Log.d(AppConstants.TAG, "onSearchQueryChange: ${e.message}")
+                _dataStates.update { it.copy(suggestions = emptyList()) }
+            }
+        }
+    }
+
+    fun onSuggestionSelected(prediction: AutocompletePrediction) {
+        viewModelScope.launch {
+            try {
+                //Tell the api what i want to get
+                val placeFields = listOf(Place.Field.LAT_LNG, Place.Field.NAME)
+                val request = FetchPlaceRequest.newInstance(prediction.placeId, placeFields)
+                val response = placesClient.fetchPlace(request).await()
+                val place = response.place
+
+                place.latLng?.let { latLng ->
+                    _dataStates.update {
+                        it.copy(
+                            selectedLatLan = latLng,
+                            searchQuery = place.name ?: it.searchQuery,
+                            suggestions = emptyList()
+                        )
+                    }
+                }
+            } catch (e: Exception) {
+                Log.d(AppConstants.TAG, "onSuggestionSelected: ${e.message}")
+            }
+        }
+    }
+
 }
 
 
 data class AddToFavoriteData(
     var selectedLatLan: LatLng = LatLng(0.0, 0.0),
+    val searchQuery: String = "",
+    val suggestions: List<AutocompletePrediction> = emptyList()
 )
 
 sealed class AddToFavoriteState {
