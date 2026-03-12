@@ -114,7 +114,6 @@ fun ShowTheList(
                         Screens.FavoriteDetailScreen(
                             lat = favorite.lat,
                             lon = favorite.lon,
-                            cityName = favorite.cityName
                         )
                     )
                 },

@@ -34,8 +34,7 @@ sealed class Screens {
     @Serializable
     data class FavoriteDetailScreen(
         val lat: Double,
-        val lon: Double,
-        val cityName: String
+        val lon: Double
     ) : Screens()
 
 

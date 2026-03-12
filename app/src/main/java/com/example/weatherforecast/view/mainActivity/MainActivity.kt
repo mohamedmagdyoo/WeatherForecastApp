@@ -35,7 +35,7 @@ import com.example.weatherforecast.ui.theme.WeatherForecastTheme
 import com.example.weatherforecast.utils.AppConstants
 import com.example.weatherforecast.view.alertScreen.AlertScreen
 import com.example.weatherforecast.view.addToFavoriteScreen.view.AddFavoriteScreen
-import com.example.weatherforecast.view.favoritesScreen.view.FavoriteDetailScreen
+import com.example.weatherforecast.view.favoriteLocationDetails.FavoriteDetailScreen
 import com.example.weatherforecast.view.favoritesScreen.view.FavoritesScreen
 import com.example.weatherforecast.view.homeScreen.view.HomeScreen
 import com.example.weatherforecast.view.settingsScreen.view.SettingsScreen
@@ -196,8 +196,7 @@ fun SetUpNavGraph(
             val args = backStackEntry.toRoute<Screens.FavoriteDetailScreen>()
             FavoriteDetailScreen(
                 lat = args.lat,
-                lon = args.lon,
-                cityName = args.cityName
+                lon = args.lon
             )
         }
 
