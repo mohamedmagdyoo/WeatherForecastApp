@@ -49,6 +49,7 @@ import com.example.weatherforecast.view.addToFavoriteScreen.viewModel.AddToFavor
 import com.example.weatherforecast.view.addToFavoriteScreen.viewModel.AddToFavoriteState
 import com.example.weatherforecast.view.addToFavoriteScreen.viewModel.AddToFavoriteViewModel
 import com.example.weatherforecast.view.addToFavoriteScreen.viewModel.AddToFavoriteViewModelFactory
+import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.MarkerState
@@ -104,7 +105,9 @@ fun MainScreen(
             .fillMaxSize()
     ) {
         // map and search bar
-        MapScreen(vm, dataState)
+        MapScreen(vm, dataState) {
+            vm.onMapTapped(it)
+        }
 
         //fun to check the screen state
         CheckScreenState(navController, screenState)
@@ -132,10 +135,10 @@ fun MainScreen(
 }
 
 @Composable
-fun MapScreen(vm: AddToFavoriteViewModel, data: AddToFavoriteData) {
+fun MapScreen(vm: AddToFavoriteViewModel, data: AddToFavoriteData, onMapClicked: (LatLng) -> Unit) {
     GoogleMap(
         modifier = Modifier.fillMaxSize(),
-        onMapClick = { vm.onMapTapped(it) }
+        onMapClick = { onMapClicked(it) }
     ) {
         Marker(
             state = MarkerState(position = data.selectedLatLan),
