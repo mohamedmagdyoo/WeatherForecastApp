@@ -60,6 +60,7 @@ class AppPreferences(val context: Context) {
             Log.d(AppConstants.TAG, "failed to save location")
         }
     }
+
     fun saveLocationWithLatAndLon(lat: Double, lon: Double) {
         val result = sp.edit()
             .putFloat("lat", lat.toFloat())

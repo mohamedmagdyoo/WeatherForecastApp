@@ -1,10 +1,9 @@
-package com.example.weatherforecast.view.favoriteLocationDetails
+package com.example.weatherforecast.view.favoriteLocationDetails.viewModel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.example.weatherforecast.data.appPreferences.AppPreferences
-import com.example.weatherforecast.data.weather.WeatherRepo
 import com.example.weatherforecast.data.weather.dataSource.local.entity.CurrentWeatherEntity
 import com.example.weatherforecast.data.weather.dataSource.local.mappers.toEntity
 import com.example.weatherforecast.data.weather.dataSource.local.mappers.toEntityList

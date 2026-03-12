@@ -28,7 +28,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.layout.ModifierLocalBeyondBoundsLayout
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -43,7 +42,6 @@ import com.example.weatherforecast.data.network.RetrofitHelper
 import com.example.weatherforecast.data.weather.WeatherRepo
 import com.example.weatherforecast.data.weather.dataSource.local.WeatherLocalSource
 import com.example.weatherforecast.data.weather.dataSource.remote.WeatherRemoteSource
-import com.example.weatherforecast.ui.theme.TextWhite
 import com.example.weatherforecast.utils.AppConstants
 import com.example.weatherforecast.view.addToFavoriteScreen.viewModel.AddToFavoriteData
 import com.example.weatherforecast.view.addToFavoriteScreen.viewModel.AddToFavoriteState
@@ -78,12 +76,9 @@ fun AddFavoriteScreen(navController: NavHostController) {
     )
     val vm = viewModel<AddToFavoriteViewModel>(factory = factory)
 
-    val dataState by vm.dataStates.collectAsStateWithLifecycle()
-    val screenState by vm.state.collectAsStateWithLifecycle()
-
-
-
-    MainScreen(vm, navController, dataState, screenState)
+    MainMapScreen(vm, navController) {
+        vm.onSaveClick()
+    }
 
 }
 
@@ -94,20 +89,20 @@ fun AddFavoriteScreenPreview() {
 }
 
 @Composable
-fun MainScreen(
+fun MainMapScreen(
     vm: AddToFavoriteViewModel,
     navController: NavHostController,
-    dataState: AddToFavoriteData,
-    screenState: AddToFavoriteState
+    onSaveLocation: (LatLng) -> Unit
 ) {
+    val dataState by vm.dataStates.collectAsStateWithLifecycle()
+    val screenState by vm.state.collectAsStateWithLifecycle()
+
     Box(
         modifier = Modifier
             .fillMaxSize()
     ) {
         // map and search bar
-        MapScreen(vm, dataState) {
-            vm.onMapTapped(it)
-        }
+        MapScreen(vm, dataState)
 
         //fun to check the screen state
         CheckScreenState(navController, screenState)
@@ -124,9 +119,7 @@ fun MainScreen(
                 modifier = Modifier
                     .align(Alignment.CenterHorizontally)
                     .padding(16.dp),
-                onClick = {
-                    vm.onSaveClick()
-                }
+                onClick = { onSaveLocation(dataState.selectedLatLan) }
             ) {
                 Text(text = "Save To Favorite")
             }
@@ -135,10 +128,10 @@ fun MainScreen(
 }
 
 @Composable
-fun MapScreen(vm: AddToFavoriteViewModel, data: AddToFavoriteData, onMapClicked: (LatLng) -> Unit) {
+fun MapScreen(vm: AddToFavoriteViewModel, data: AddToFavoriteData) {
     GoogleMap(
         modifier = Modifier.fillMaxSize(),
-        onMapClick = { onMapClicked(it) }
+        onMapClick = { vm.onMapTapped(it) }
     ) {
         Marker(
             state = MarkerState(position = data.selectedLatLan),
@@ -166,7 +159,8 @@ fun SearchScreen(vm: AddToFavoriteViewModel, data: AddToFavoriteData) {
             },
             shape = RoundedCornerShape(12.dp),
             colors = OutlinedTextFieldDefaults.colors(
-                focusedContainerColor = TextWhite
+                focusedContainerColor = MaterialTheme.colorScheme.surface,
+                unfocusedContainerColor = MaterialTheme.colorScheme.surface
             ),
             modifier = Modifier.fillMaxWidth(),
             singleLine = true

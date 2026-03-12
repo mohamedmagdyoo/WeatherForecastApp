@@ -24,11 +24,16 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import java.util.Locale
 
+interface  MapBehavior{
+
+
+}
+
 class AddToFavoriteViewModel(
     private val context: Context,
     private val weatherRepo: WeatherRepoInterface,
     private val appPreferences: AppPreferences
-) : ViewModel() {
+) : ViewModel(), MapBehavior {
 
     private val _dataStates = MutableStateFlow(AddToFavoriteData())
     val dataStates = _dataStates.asStateFlow()
@@ -134,7 +139,6 @@ class AddToFavoriteViewModel(
             }
         }
     }
-
 }
 
 

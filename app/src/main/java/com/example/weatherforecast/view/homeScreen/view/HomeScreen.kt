@@ -74,7 +74,7 @@ import java.util.Locale
 lateinit var prefs: AppPreferences
 
 @Composable
-fun HomeScreen(modifier: Modifier = Modifier) {
+fun HomeScreen() {
     //That will not ever change so no worry about recomposition
     val appContext = LocalContext.current.applicationContext
 
@@ -93,7 +93,7 @@ fun HomeScreen(modifier: Modifier = Modifier) {
     val state by vm.screenState.collectAsStateWithLifecycle()
 
     Box(
-        modifier = modifier
+        modifier = Modifier
             .fillMaxSize()
             .background(Brush.verticalGradient(listOf(DarkBlue, MidBlue)))
     ) {

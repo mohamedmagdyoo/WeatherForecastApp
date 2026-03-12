@@ -27,7 +27,6 @@ class HomeViewModel(
     init {
         viewModelScope.launch {
             appPreferences.settingsChanged.collect { newSettings ->
-//                Log.d(AppConstants.TAG, "Collect new settings:${newSettings.toString()} ")
                 refreshData(newSettings)
                 getScreenData()
             }
@@ -40,7 +39,7 @@ class HomeViewModel(
         val lang = newSettings.language
         val unit = newSettings.unit
 
-        Log.d(AppConstants.TAG, " ... lat:$lat lon:$lon lang:$lang unit:$unit")
+        Log.d(AppConstants.TAG, " refresh... lat:$lat lon:$lon lang:$lang unit:$unit")
         val result = weatherRepo.refreshWeatherData(lat, lon, unit, lang)
         if (result.isFailure) {
             Log.d(AppConstants.TAG, "refresh failed: ${result.exceptionOrNull()}")

@@ -1,4 +1,4 @@
-package com.example.weatherforecast.view.favoriteLocationDetails
+package com.example.weatherforecast.view.favoriteLocationDetails.view
 
 
 import androidx.compose.foundation.background
@@ -12,12 +12,14 @@ import androidx.compose.ui.graphics.Brush
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.compose.ui.platform.LocalContext
-import androidx.navigation.NavHostController
 import com.example.weatherforecast.data.appPreferences.AppPreferences
 import com.example.weatherforecast.data.network.RetrofitHelper
 import com.example.weatherforecast.data.weather.dataSource.remote.WeatherRemoteSource
 import com.example.weatherforecast.ui.theme.DarkBlue
 import com.example.weatherforecast.ui.theme.MidBlue
+import com.example.weatherforecast.view.favoriteLocationDetails.viewModel.FavoriteDetailState
+import com.example.weatherforecast.view.favoriteLocationDetails.viewModel.FavoriteDetailViewModel
+import com.example.weatherforecast.view.favoriteLocationDetails.viewModel.FavoriteDetailViewModelFactory
 import com.example.weatherforecast.view.homeScreen.view.OnError
 import com.example.weatherforecast.view.homeScreen.view.OnLoading
 import com.example.weatherforecast.view.homeScreen.view.OnSuccess
