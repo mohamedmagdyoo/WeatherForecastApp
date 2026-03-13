@@ -1,6 +1,5 @@
 package com.example.weatherforecast.view.favoritesScreen.view
 
-import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -27,6 +26,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import com.example.labs.R
+import com.example.weatherforecast.data.appPreferences.AppPreferences
 import com.example.weatherforecast.data.db.WeatherDatabase
 import com.example.weatherforecast.data.network.RetrofitHelper
 import com.example.weatherforecast.data.weather.WeatherRepo
@@ -36,6 +36,8 @@ import com.example.weatherforecast.data.weather.dataSource.remote.WeatherRemoteS
 import com.example.weatherforecast.ui.theme.DarkBlue
 import com.example.weatherforecast.ui.theme.MidBlue
 import com.example.weatherforecast.ui.theme.TextWhite
+import com.example.weatherforecast.view.addToFavoriteScreen.viewModel.AddToFavoriteViewModel
+import com.example.weatherforecast.view.addToFavoriteScreen.viewModel.AddToFavoriteViewModelFactory
 import com.example.weatherforecast.view.favoritesScreen.viewModel.FavoritesViewModel
 import com.example.weatherforecast.view.favoritesScreen.viewModel.FavoritesViewModelFactory
 import com.example.weatherforecast.view.mainActivity.Screens
@@ -46,25 +48,42 @@ fun FavoritesScreen(navController: NavHostController) {
 
     val appContext = LocalContext.current.applicationContext
     val db = WeatherDatabase.getInstance(appContext)
+    val weatherDao = db.currentWeatherDao()
+    val forecastDao = db.forecastDao()
+    val favoriteDao = db.favoriteDao()
     val weatherService = RetrofitHelper.weatherService
     val remote = WeatherRemoteSource(weatherService)
-    val local = WeatherLocalSource(
-        db.currentWeatherDao(),
-        db.forecastDao(),
-        db.favoriteDao()
-    )
+    val local = WeatherLocalSource(weatherDao, forecastDao, favoriteDao)
     val weatherRepo = WeatherRepo(remote, local)
-    val factory = FavoritesViewModelFactory(weatherRepo = weatherRepo)
-    val vm: FavoritesViewModel = viewModel(factory = factory)
 
-    val favorites by vm.favorites.collectAsStateWithLifecycle()
+
+    //=========================================
+    val factoryForAddToFavViewModel = AddToFavoriteViewModelFactory(
+        appContext,
+        weatherRepo,
+        AppPreferences.getInstance(appContext)
+    )
+    val addToFavoriteViewModel =
+        viewModel<AddToFavoriteViewModel>(factory = factoryForAddToFavViewModel)
+    //=========================================
+    val factoryForFavoritesViewModel = FavoritesViewModelFactory(
+        weatherRepo = weatherRepo,
+        addToFavViewModel = addToFavoriteViewModel,
+        appPreferences = AppPreferences.getInstance(appContext)
+    )
+    val favoriteViewModel: FavoritesViewModel =
+        viewModel<FavoritesViewModel>(factory = factoryForFavoritesViewModel)
+    //=========================================
+
+
+    val favorites by favoriteViewModel.favorites.collectAsStateWithLifecycle()
 
     Scaffold(
         floatingActionButton = {
             FloatingActionButton(
                 onClick = { navController.navigate(Screens.AddFavoriteScreen) }
             ) {
-                Icon(Icons.Default.Add, contentDescription = "Add Favorite")
+                Icon(Icons.Default.Add, contentDescription = stringResource(R.string.add_favorite))
             }
         }
     ) { padding ->
@@ -82,7 +101,7 @@ fun FavoritesScreen(navController: NavHostController) {
                         .padding(padding),
                     favorites = favorites,
                     navController = navController,
-                    vm = vm
+                    vm = favoriteViewModel
                 )
             }
 
@@ -105,7 +124,7 @@ fun ShowTheList(
     ) {
         items(
             items = favorites,
-            key = { "${it.lat}_${it.lon}" }
+            key = { "${it.lat}_${it.lon}" } // when one item in the list change this item just will recompose and the rest not
         ) { favorite ->
             FavoriteCard(
                 favorite = favorite,
@@ -177,7 +196,7 @@ fun FavoriteCard(
 
             Image(
                 imageVector = Icons.Default.Delete,
-                contentDescription = "Delete",
+                contentDescription = stringResource(R.string.delete),
                 modifier = Modifier.clickable { onDelete() }
             )
         }

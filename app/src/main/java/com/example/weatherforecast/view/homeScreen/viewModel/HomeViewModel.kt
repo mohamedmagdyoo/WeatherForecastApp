@@ -9,6 +9,7 @@ import com.example.weatherforecast.data.appPreferences.UserSettings
 import com.example.weatherforecast.data.weather.WeatherRepo
 import com.example.weatherforecast.data.weather.WeatherRepoInterface
 import com.example.weatherforecast.data.weather.dataSource.local.entity.CurrentWeatherEntity
+import com.example.weatherforecast.data.weather.dataSource.remote.dto.forcast.ForecastResult
 import com.example.weatherforecast.utils.AppConstants
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -26,6 +27,7 @@ class HomeViewModel(
 
     init {
         viewModelScope.launch {
+            // here i collect any change with the setting even the location change
             appPreferences.settingsChanged.collect { newSettings ->
                 refreshData(newSettings)
                 getScreenData()
@@ -45,6 +47,11 @@ class HomeViewModel(
             Log.d(AppConstants.TAG, "refresh failed: ${result.exceptionOrNull()}")
             _screenState.value = HomeScreenState.Error
         }
+    }
+
+    fun checkIfRefreshNeeded(): Boolean {
+        val locationMethod = appPreferences.getLocationMethod()
+        return true
     }
 
     private fun getScreenData() {
@@ -100,6 +107,17 @@ class HomeViewModel(
             refreshData(settings)
         }
     }
+}
+
+sealed class HomeScreenState {
+    object Loading : HomeScreenState()
+    data class Success(
+        val currentWeather: CurrentWeatherEntity,
+        val forecastResult: ForecastResult
+    ) : HomeScreenState()
+
+    object Error : HomeScreenState()
+
 }
 
 @Suppress("UNCHECKED_CAST")

@@ -7,4 +7,6 @@ sealed class LocationResultStates {
     object PermissionDenied : LocationResultStates()
     object GpsDisabled : LocationResultStates()
     object LocationNull : LocationResultStates()
+    object AlreadySetWithMap : LocationResultStates()
+
 }

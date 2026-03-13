@@ -16,6 +16,7 @@ class LocationService(val context: Activity) {
     companion object {
         const val REQUEST_LOCATION_CODE = 2026
     }
+
     val fusedClint = LocationServices.getFusedLocationProviderClient(context)
     val appPreferences = AppPreferences.getInstance(context)
 
@@ -28,6 +29,13 @@ class LocationService(val context: Activity) {
         if (!checkLocationPermeation()) {
             return LocationResultStates.PermissionDenied
         }
+
+        if (appPreferences.getLocationMethod() == "Map") {
+            appPreferences.notifyChanged()
+            return LocationResultStates.AlreadySetWithMap
+        }
+
+
         // i used suspendCancellableCoroutine to convert from callback to coroutine
         val state = suspendCancellableCoroutine { task ->
             fusedClint.lastLocation

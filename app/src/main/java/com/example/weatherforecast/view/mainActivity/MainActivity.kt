@@ -33,6 +33,7 @@ import com.example.weatherforecast.data.location.LocationResultStates
 import com.example.weatherforecast.data.location.LocationService
 import com.example.weatherforecast.ui.theme.WeatherForecastTheme
 import com.example.weatherforecast.utils.AppConstants
+import com.example.weatherforecast.utils.LanguageHelper
 import com.example.weatherforecast.view.alertScreen.AlertScreen
 import com.example.weatherforecast.view.addToFavoriteScreen.view.AddFavoriteScreen
 import com.example.weatherforecast.view.favoriteLocationDetails.view.FavoriteDetailScreen
@@ -81,7 +82,6 @@ class MainActivity : ComponentActivity() {
             val locationState = locationService.tryGetLastLocation()
             manageLocationState(locationState)
         }
-
     }
 
 
@@ -147,15 +147,21 @@ class MainActivity : ComponentActivity() {
                     isAsked = true
                     locationService.getLocationPermeation()
                 }
-
                 AppPreferences.getInstance(this).notifyChanged()
-//                appPreferences.notifyChanged()
             }
 
             is LocationResultStates.Success -> {
                 Toast.makeText(
                     this@MainActivity,
                     getString(R.string.location_fetched_successfully),
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+
+            LocationResultStates.AlreadySetWithMap -> {
+                Toast.makeText(
+                    this@MainActivity,
+                    getString(R.string.location_already_set_with_map),
                     Toast.LENGTH_SHORT
                 ).show()
             }
@@ -168,7 +174,6 @@ class MainActivity : ComponentActivity() {
         super.attachBaseContext(newContext)
     }
 }
-
 
 @Composable
 fun SetUpNavGraph(

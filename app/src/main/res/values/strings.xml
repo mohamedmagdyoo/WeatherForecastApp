@@ -35,4 +35,7 @@
     <string name="tap_to_add_one">Tap + to add one</string>
     <string name="search_for_a_city">Search for a city...</string>
     <string name="search_icon">Search Icon</string>
+    <string name="location_already_set_with_map">Location already set with map</string>
+    <string name="add_favorite">Add Favorite</string>
+    <string name="delete">Delete</string>
 </resources>

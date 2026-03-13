@@ -24,7 +24,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import java.util.Locale
 
-interface  MapBehavior{
+interface MapBehavior {
 
 
 }
@@ -60,21 +60,26 @@ class AddToFavoriteViewModel(
             val lon = _dataStates.value.selectedLatLan.longitude
 
             viewModelScope.launch {
-                try {
-                    //need fun to get the city name
-                    val cityName = getCityName(lat, lon)
-                    val result = weatherRepo.getFavoriteLocation(lat, lon, unit, lang, cityName)
-                    if (result.isSuccess) {
-                        val favLocation = result.getOrThrow()
-                        _state.value = AddToFavoriteState.Success
-                        weatherRepo.insertFavorite(favLocation)
-                    } else {
-                        throw result.exceptionOrNull() ?: Exception("Unknown Error")
-                    }
-                } catch (ex: Exception) {
-                    Log.d(AppConstants.TAG, "onSaveClick: ${ex.message}")
-                }
+                saveLocationTODataBase(lat, lon, unit, lang)
             }
+        }
+    }
+
+    suspend fun saveLocationTODataBase(lat: Double, lon: Double, unit: String, lang: String) {
+
+        try {
+            //need fun to get the city name
+            val cityName = getCityName(lat, lon)
+            val result = weatherRepo.getFavoriteLocation(lat, lon, unit, lang, cityName)
+            if (result.isSuccess) {
+                val favLocation = result.getOrThrow()
+                _state.value = AddToFavoriteState.Success
+                weatherRepo.insertFavorite(favLocation)
+            } else {
+                throw result.exceptionOrNull() ?: Exception("Unknown Error")
+            }
+        } catch (ex: Exception) {
+            Log.d(AppConstants.TAG, "onSaveClick: ${ex.message}")
         }
     }
 

@@ -71,10 +71,16 @@ fun SettingsScreen(navController: NavHostController) {
     val selectedSourceOfLocation by vm.selectedSourceOfLocation.collectAsStateWithLifecycle()
     val uiState by vm.settingsScreenState.collectAsStateWithLifecycle()
 
+    //Runs after composition is done usualy use with navgation,show snackbars
     LaunchedEffect(uiState) {
         if (uiState == SettingsScreenState.Success) {
             navController.navigateUp()
         }
+    }
+
+    if (uiState == SettingsScreenState.Loading) {
+        Log.d(AppConstants.TAG, "Loading:.. ")
+        CircularProgressIndicator()
     }
 
 
@@ -98,7 +104,7 @@ fun SettingsScreen(navController: NavHostController) {
         )
         val addToFavoriteViewModel = viewModel<AddToFavoriteViewModel>(factory = factory)
         val navController = NavHostController(LocalContext.current)
-
+        //reusing the this composable fun with it's own viewmodel todo search on more best way then that
         MainMapScreen(addToFavoriteViewModel, navController) {
             Log.d(AppConstants.TAG, "ClickedOnSave: ")
             vm.onSaveLocation(it)
@@ -113,17 +119,12 @@ fun SettingsScreen(navController: NavHostController) {
 @Composable
 fun MainContent(vm: SettingsViewModel) {
     val state by vm.uiDataState.collectAsStateWithLifecycle()
-    val uiState by vm.settingsScreenState.collectAsStateWithLifecycle()
-
-
 
     Box(
         modifier = Modifier
             .fillMaxSize()
             .background(Brush.verticalGradient(listOf(DarkBlue, MidBlue)))
     ) {
-        if (uiState == SettingsScreenState.Loading)
-            CircularProgressIndicator()
 
         LazyColumn(
             contentPadding = PaddingValues(16.dp),

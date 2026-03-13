@@ -134,7 +134,7 @@ class AppPreferences(val context: Context) {
     }
 
     fun getLocationMethod(): String {
-        return sp.getString("location_method", "gps") ?: "gps"
+        return sp.getString("location_method", "GPS") ?: "GPS"
     }
 
     //Notifications
