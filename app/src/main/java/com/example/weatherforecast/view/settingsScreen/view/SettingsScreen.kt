@@ -88,6 +88,7 @@ fun SettingsScreen(navController: NavHostController) {
     if (selectedSourceOfLocation == R.string.map) {
         Log.d(AppConstants.TAG, "SettingsScreen: nav to map screen")
 
+        //======================================================
         val appContext = LocalContext.current.applicationContext
         val db = WeatherDatabase.getInstance(appContext)
         val weatherDao = db.currentWeatherDao()
@@ -103,6 +104,8 @@ fun SettingsScreen(navController: NavHostController) {
             AppPreferences.getInstance(appContext)
         )
         val addToFavoriteViewModel = viewModel<AddToFavoriteViewModel>(factory = factory)
+        //======================================================
+
         val navController = NavHostController(LocalContext.current)
         //reusing the this composable fun with it's own viewmodel todo search on more best way then that
         MainMapScreen(addToFavoriteViewModel, navController) {

@@ -34,8 +34,8 @@ import com.example.weatherforecast.data.location.LocationService
 import com.example.weatherforecast.ui.theme.WeatherForecastTheme
 import com.example.weatherforecast.utils.AppConstants
 import com.example.weatherforecast.utils.LanguageHelper
-import com.example.weatherforecast.view.alertScreen.AlertScreen
 import com.example.weatherforecast.view.addToFavoriteScreen.view.AddFavoriteScreen
+import com.example.weatherforecast.view.alertScreen.AlertScreen
 import com.example.weatherforecast.view.favoriteLocationDetails.view.FavoriteDetailScreen
 import com.example.weatherforecast.view.favoritesScreen.view.FavoritesScreen
 import com.example.weatherforecast.view.homeScreen.view.HomeScreen
@@ -47,12 +47,14 @@ class MainActivity : ComponentActivity() {
         var isAsked = false
     }
 
+    private lateinit var appPreferences: AppPreferences
+
     private lateinit var locationService: LocationService
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         locationService = LocationService(this)
-        val appPreferences: AppPreferences = AppPreferences.getInstance(this)
+        appPreferences = AppPreferences.getInstance(this)
 
         enableEdgeToEdge()
         setContent {
@@ -69,11 +71,10 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
-        lifecycleScope.launch {
-            appPreferences.languageChanged.collect { lang ->
-                recreate()
-            }
-        }
+
+        //Collectors
+        observeOnLanguageChange()
+        observeOnLocationMethodChange()
     }
 
     override fun onStart() {
@@ -173,7 +174,30 @@ class MainActivity : ComponentActivity() {
         val newContext = LanguageHelper.setLocale(newBase, lang)
         super.attachBaseContext(newContext)
     }
+
+    //Collectors
+    fun observeOnLanguageChange() {
+        lifecycleScope.launch {
+            appPreferences.languageChanged.collect { lang ->
+                recreate()
+            }
+        }
+    }
+
+    fun observeOnLocationMethodChange() {
+        lifecycleScope.launch {
+            appPreferences.locationMethodChanged.collect { locationMethod ->
+                if (locationMethod == "GPS") {
+                    lifecycleScope.launch {
+                        val locationState = locationService.tryGetLastLocation()
+                        manageLocationState(locationState)
+                    }
+                }
+            }
+        }
+    }
 }
+
 
 @Composable
 fun SetUpNavGraph(

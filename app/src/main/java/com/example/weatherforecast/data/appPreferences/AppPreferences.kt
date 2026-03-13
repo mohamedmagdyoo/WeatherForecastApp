@@ -19,6 +19,10 @@ class AppPreferences(val context: Context) {
     private val _languageChanged = MutableSharedFlow<String>()
     val languageChanged = _languageChanged.asSharedFlow()
 
+    private val _locationMethodChanged = MutableSharedFlow<String>()
+    val locationMethodChanged = _locationMethodChanged.asSharedFlow()
+
+
     companion object {
         @Volatile
         private var INSTANCE: AppPreferences? = null
@@ -130,7 +134,8 @@ class AppPreferences(val context: Context) {
         sp.edit()
             .putString("location_method", method)
             .apply()
-        _settingsChanged.emit(getUserSettings())
+//        _settingsChanged.emit(getUserSettings())
+        _locationMethodChanged.emit(method)
     }
 
     fun getLocationMethod(): String {
