@@ -119,38 +119,9 @@ fun ShowTheList(
 
     var selectedToDelete by remember { mutableStateOf<FavoriteLocation?>(null) }
 
-    selectedToDelete.also { favorite ->
-        if (favorite != null) {
-            AlertDialog(
-                title = { Text("Delete ${favorite.cityName}") },
-                text = {
-                    Text(
-                        "Are you sure you want to delete ${favorite.cityName}?",
-                        color = Color.Red
-                    )
-                },
-                onDismissRequest = { selectedToDelete = null },
-                dismissButton = {
-                    TextButton(onClick = {
-                        selectedToDelete = null
-                    }) {
-                        Text(text = "Cancel")
-                    }
-                },
-                confirmButton = {
-                    TextButton(
-                        onClick = {
-                            vm.deleteFavorite(favorite)
-                            selectedToDelete = null
-                        }
-                    ) {
-                        Text(text = "Delete", color = Color.Red)
-                    }
-                },
-            )
-        }
+    ShowRemovingDialog(selectedToDelete, vm) {
+        selectedToDelete = null
     }
-
 
     LazyColumn(
         modifier = modifier
@@ -173,6 +144,45 @@ fun ShowTheList(
                     )
                 },
                 onDelete = { selectedToDelete = favorite }
+            )
+        }
+    }
+}
+
+@Composable
+fun ShowRemovingDialog(
+    selectedToDelete: FavoriteLocation?,
+    vm: FavoritesViewModel,
+    onDismiss: () -> Unit
+) {
+    selectedToDelete.also { favorite ->
+        if (favorite != null) {
+            AlertDialog(
+                title = { Text("Delete ${favorite.cityName}") },
+                text = {
+                    Text(
+                        "Are you sure you want to delete ${favorite.cityName}?",
+                        color = Color.Red
+                    )
+                },
+                onDismissRequest = { onDismiss() },
+                dismissButton = {
+                    TextButton(onClick = {
+                        onDismiss()
+                    }) {
+                        Text(text = "Cancel")
+                    }
+                },
+                confirmButton = {
+                    TextButton(
+                        onClick = {
+                            vm.deleteFavorite(favorite)
+                            onDismiss()
+                        }
+                    ) {
+                        Text(text = "Delete", color = Color.Red)
+                    }
+                },
             )
         }
     }

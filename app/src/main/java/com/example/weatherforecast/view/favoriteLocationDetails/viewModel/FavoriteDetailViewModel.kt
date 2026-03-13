@@ -1,5 +1,6 @@
 package com.example.weatherforecast.view.favoriteLocationDetails.viewModel
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
@@ -10,49 +11,57 @@ import com.example.weatherforecast.data.weather.dataSource.local.mappers.toEntit
 import com.example.weatherforecast.data.weather.dataSource.local.mappers.toForecastResult
 import com.example.weatherforecast.data.weather.dataSource.remote.WeatherRemoteSourceInterface
 import com.example.weatherforecast.data.weather.dataSource.remote.dto.forcast.ForecastResult
+import com.example.weatherforecast.utils.AppConstants
 import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import java.net.SocketTimeoutException
+import java.net.UnknownHostException
 
 class FavoriteDetailViewModel(
     private val remote: WeatherRemoteSourceInterface,
     private val appPreferences: AppPreferences,
-    private val lat: Double,
-    private val lon: Double
 ) : ViewModel() {
 
     private val _state = MutableStateFlow<FavoriteDetailState>(FavoriteDetailState.Loading)
     val state = _state.asStateFlow()
 
-    init {
-        loadData()
-    }
+    fun loadData(lat: Double, lon: Double) {
+        Log.d(AppConstants.TAG, "FavoriteDetailViewModel: loadData....")
+        _state.value = FavoriteDetailState.Loading
+        val unit = appPreferences.getTempUnit()
+        val lang = appPreferences.getLanguage()
 
-    fun loadData() {
         viewModelScope.launch {
             try {
-                val unit = appPreferences.getTempUnit()
-                val lang = appPreferences.getLanguage()
+                // todo understand it again
+                coroutineScope {
+                    // fetch both at the same time
+                    val currentWeatherDeferred =
+                        async { remote.getCurrentWeather(lat, lon, unit, lang) }
+                    val forecastDeferred = async { remote.getForecast(lat, lon, unit, lang) }
 
-                // fetch both at the same time
-                val currentWeatherDeferred =
-                    async { remote.getCurrentWeather(lat, lon, unit, lang) }
-                val forecastDeferred = async { remote.getForecast(lat, lon, unit, lang) }
+                    val currentWeatherResult = currentWeatherDeferred.await()
+                    val forecastResult = forecastDeferred.await()
 
-                val currentWeatherResult = currentWeatherDeferred.await()
-                val forecastResult = forecastDeferred.await()
-
-                if (currentWeatherResult.isSuccess && forecastResult.isSuccess) {
-                    _state.value = FavoriteDetailState.Success(
-                        currentWeather = currentWeatherResult.getOrThrow().toEntity(lat, lon),
-                        forecast = forecastResult.getOrThrow().toEntityList(lat, lon)
-                            .toForecastResult()
-                    )
-                } else {
-                    _state.value = FavoriteDetailState.Error
+                    if (currentWeatherResult.isSuccess && forecastResult.isSuccess) {
+                        _state.value = FavoriteDetailState.Success(
+                            currentWeather = currentWeatherResult.getOrThrow().toEntity(lat, lon),
+                            forecast = forecastResult.getOrThrow().toEntityList(lat, lon)
+                                .toForecastResult()
+                        )
+                    } else {
+                        Log.d(AppConstants.TAG, "FavoriteDetailViewModel: loadData failed...")
+                        _state.value = FavoriteDetailState.Error
+                    }
                 }
             } catch (e: Exception) {
+                Log.d(
+                    AppConstants.TAG,
+                    "FavoriteDetailViewModel: loadData Exception...${e.message}"
+                )
                 _state.value = FavoriteDetailState.Error
             }
         }
@@ -72,10 +81,8 @@ sealed class FavoriteDetailState {
 class FavoriteDetailViewModelFactory(
     private val remote: WeatherRemoteSourceInterface,
     private val appPreferences: AppPreferences,
-    private val lat: Double,
-    private val lon: Double
 ) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        return FavoriteDetailViewModel(remote, appPreferences, lat, lon) as T
+        return FavoriteDetailViewModel(remote, appPreferences) as T
     }
 }

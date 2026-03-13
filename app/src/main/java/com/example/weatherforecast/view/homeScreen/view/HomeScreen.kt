@@ -71,7 +71,6 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
-lateinit var prefs: AppPreferences
 
 @Composable
 fun HomeScreen() {
@@ -81,9 +80,9 @@ fun HomeScreen() {
     // the key in remember means if this key changes, this remember block will be called again --> remember(key = ..)
     val factory = remember {
         val db = WeatherDatabase.getInstance(appContext)
-        val local = WeatherLocalSource(db.currentWeatherDao(),  db.forecastDao(),db.favoriteDao())
+        val local = WeatherLocalSource(db.currentWeatherDao(), db.forecastDao(), db.favoriteDao())
         val remote = WeatherRemoteSource(RetrofitHelper.weatherService)
-        prefs = AppPreferences.getInstance(appContext)
+        val prefs = AppPreferences.getInstance(appContext)
         val repo = WeatherRepo(remote, local)
         HomeViewModelFactory(repo, prefs)
     }
@@ -100,13 +99,14 @@ fun HomeScreen() {
         when (val currentState = state) {
             is HomeScreenState.Loading -> OnLoading()
 
-            is HomeScreenState.Error -> OnError() {
+            is HomeScreenState.Error -> OnError {
                 vm.enforceRefresh()
             }
 
             is HomeScreenState.Success -> OnSuccess(
                 currentWeather = currentState.currentWeather,
-                forecast = currentState.forecastResult
+                forecast = currentState.forecastResult,
+                prefs = AppPreferences.getInstance(appContext)
             )
         }
     }
@@ -181,7 +181,8 @@ fun OnError(
 fun OnSuccess(
     modifier: Modifier = Modifier,
     currentWeather: CurrentWeatherEntity,
-    forecast: ForecastResult
+    forecast: ForecastResult,
+    prefs: AppPreferences
 ) {
     LazyColumn(
         modifier = modifier.fillMaxSize(),
@@ -190,7 +191,7 @@ fun OnSuccess(
     ) {
         item { HeaderSection(currentWeather) }
         item { MainTempCard(currentWeather) }
-        item { StatsRow(currentWeather) }
+        item { StatsRow(currentWeather, prefs = prefs) }
 //        if (forecast.listOfHourlyForecast.isNotEmpty()) {
         item { HourlySection(forecast.listOfHourlyForecast) }
 //        }
@@ -271,7 +272,7 @@ fun MainTempCard(weather: CurrentWeatherEntity) {
 // ── Stats Row ─────────────────────────────────────────────
 
 @Composable
-fun StatsRow(weather: CurrentWeatherEntity) {
+fun StatsRow(weather: CurrentWeatherEntity, prefs: AppPreferences) {
     LazyRow(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(8.dp)
@@ -289,8 +290,7 @@ fun StatsRow(weather: CurrentWeatherEntity) {
             )
         }
         item {
-
-            StatCard("🌡", "${weather.pressure} ⚖", stringResource(R.string.pressure))
+            StatCard("🤯", "${weather.pressure} hPa", stringResource(R.string.pressure))
         }
         item {
             StatCard("☁️", "${weather.clouds}%", stringResource(R.string.clouds))
