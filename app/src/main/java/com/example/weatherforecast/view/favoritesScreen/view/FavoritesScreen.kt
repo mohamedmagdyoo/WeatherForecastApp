@@ -116,6 +116,42 @@ fun ShowTheList(
     navController: NavHostController,
     vm: FavoritesViewModel,
 ) {
+
+    var selectedToDelete by remember { mutableStateOf<FavoriteLocation?>(null) }
+
+    selectedToDelete.also { favorite ->
+        if (favorite != null) {
+            AlertDialog(
+                title = { Text("Delete ${favorite.cityName}") },
+                text = {
+                    Text(
+                        "Are you sure you want to delete ${favorite.cityName}?",
+                        color = Color.Red
+                    )
+                },
+                onDismissRequest = { selectedToDelete = null },
+                dismissButton = {
+                    TextButton(onClick = {
+                        selectedToDelete = null
+                    }) {
+                        Text(text = "Cancel")
+                    }
+                },
+                confirmButton = {
+                    TextButton(
+                        onClick = {
+                            vm.deleteFavorite(favorite)
+                            selectedToDelete = null
+                        }
+                    ) {
+                        Text(text = "Delete", color = Color.Red)
+                    }
+                },
+            )
+        }
+    }
+
+
     LazyColumn(
         modifier = modifier
             .fillMaxSize(),
@@ -136,11 +172,12 @@ fun ShowTheList(
                         )
                     )
                 },
-                onDelete = { vm.deleteFavorite(favorite) }
+                onDelete = { selectedToDelete = favorite }
             )
         }
     }
 }
+
 
 @Composable
 fun FavoriteCard(
