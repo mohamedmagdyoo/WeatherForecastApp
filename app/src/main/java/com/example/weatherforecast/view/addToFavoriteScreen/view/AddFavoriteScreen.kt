@@ -1,3 +1,5 @@
+@file:Suppress("COMPOSE_APPLIER_CALL_MISMATCH")
+
 package com.example.weatherforecast.view.addToFavoriteScreen.view
 
 import android.util.Log
@@ -25,11 +27,13 @@ import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Snackbar
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -47,10 +51,12 @@ import com.example.weatherforecast.view.addToFavoriteScreen.viewModel.AddToFavor
 import com.example.weatherforecast.view.addToFavoriteScreen.viewModel.AddToFavoriteState
 import com.example.weatherforecast.view.addToFavoriteScreen.viewModel.AddToFavoriteViewModel
 import com.example.weatherforecast.view.addToFavoriteScreen.viewModel.AddToFavoriteViewModelFactory
+import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.MarkerState
+import com.google.maps.android.compose.rememberCameraPositionState
 
 @Composable
 fun AddFavoriteScreen(navController: NavHostController) {
@@ -121,7 +127,7 @@ fun MainMapScreen(
                     .padding(16.dp),
                 onClick = { onSaveLocation(dataState.selectedLatLan) }
             ) {
-                Text(text = "Save To Favorite")
+                Text(text = stringResource(R.string.save))
             }
         }
     }
@@ -129,8 +135,20 @@ fun MainMapScreen(
 
 @Composable
 fun MapScreen(vm: AddToFavoriteViewModel, data: AddToFavoriteData) {
+
+    val cameraPositionState = rememberCameraPositionState {}
+
+    LaunchedEffect(data.selectedLatLan) {
+        if (data.selectedLatLan != LatLng(0.0, 0.0))
+            cameraPositionState.animate(
+                update = CameraUpdateFactory.newLatLngZoom(data.selectedLatLan, 10f),
+                durationMs = 1000
+            )
+    }
+
     GoogleMap(
         modifier = Modifier.fillMaxSize(),
+        cameraPositionState =cameraPositionState,
         onMapClick = { vm.onMapTapped(it) }
     ) {
         Marker(
@@ -150,7 +168,13 @@ fun SearchScreen(vm: AddToFavoriteViewModel, data: AddToFavoriteData) {
         OutlinedTextField(
             value = data.searchQuery,
             onValueChange = { vm.onSearchQueryChange(it) },
-            placeholder = { Text(stringResource(R.string.search_for_a_city)) },
+            placeholder = {
+                Text(
+                    stringResource(R.string.search_for_a_city),
+                    maxLines = 1,
+                    textAlign = TextAlign.Start
+                )
+            },
             leadingIcon = {
                 Icon(
                     Icons.Default.Search,
@@ -160,7 +184,6 @@ fun SearchScreen(vm: AddToFavoriteViewModel, data: AddToFavoriteData) {
             shape = RoundedCornerShape(12.dp),
             colors = OutlinedTextFieldDefaults.colors(
                 focusedContainerColor = MaterialTheme.colorScheme.surface,
-                unfocusedContainerColor = MaterialTheme.colorScheme.surface
             ),
             modifier = Modifier.fillMaxWidth(),
             singleLine = true

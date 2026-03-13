@@ -38,4 +38,5 @@
     <string name="location_already_set_with_map">Location already set with map</string>
     <string name="add_favorite">Add Favorite</string>
     <string name="delete">Delete</string>
+    <string name="save">Save</string>
 </resources>
