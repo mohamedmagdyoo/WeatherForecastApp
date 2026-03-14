@@ -1,17 +1,16 @@
 package com.example.weatherforecast.data.weather
 
 import android.location.Location
-import android.util.Log
 import com.example.weatherforecast.data.weather.dataSource.local.WeatherLocalSourceInterface
-import com.example.weatherforecast.data.weather.dataSource.local.entity.CurrentWeatherEntity
-import com.example.weatherforecast.data.weather.dataSource.local.entity.FavoriteLocation
-import com.example.weatherforecast.data.weather.dataSource.local.entity.LatLonEntity
-import com.example.weatherforecast.data.weather.dataSource.local.mappers.toEntity
-import com.example.weatherforecast.data.weather.dataSource.local.mappers.toEntityList
-import com.example.weatherforecast.data.weather.dataSource.local.mappers.toFavoriteLocation
-import com.example.weatherforecast.data.weather.dataSource.local.mappers.toForecastResult
+import com.example.weatherforecast.data.weather.model.entity.CurrentWeatherEntity
+import com.example.weatherforecast.data.weather.model.entity.FavoriteLocation
+import com.example.weatherforecast.data.weather.model.entity.LatLonEntity
+import com.example.weatherforecast.data.weather.model.mappers.toEntity
+import com.example.weatherforecast.data.weather.model.mappers.toEntityList
+import com.example.weatherforecast.data.weather.model.mappers.toFavoriteLocation
+import com.example.weatherforecast.data.weather.model.mappers.toForecastResult
 import com.example.weatherforecast.data.weather.dataSource.remote.WeatherRemoteSourceInterface
-import com.example.weatherforecast.data.weather.dataSource.remote.dto.forcast.ForecastResult
+import com.example.weatherforecast.data.weather.model.dto.forcast.ForecastResult
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 

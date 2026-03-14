@@ -5,11 +5,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.example.weatherforecast.data.appPreferences.AppPreferences
-import com.example.weatherforecast.data.appPreferences.UserSettings
+import com.example.weatherforecast.data.appPreferences.util.UserSettings
 import com.example.weatherforecast.data.weather.WeatherRepo
 import com.example.weatherforecast.data.weather.WeatherRepoInterface
-import com.example.weatherforecast.data.weather.dataSource.local.entity.CurrentWeatherEntity
-import com.example.weatherforecast.data.weather.dataSource.remote.dto.forcast.ForecastResult
+import com.example.weatherforecast.data.weather.model.entity.CurrentWeatherEntity
+import com.example.weatherforecast.data.weather.model.dto.forcast.ForecastResult
 import com.example.weatherforecast.utils.AppConstants
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow

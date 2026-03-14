@@ -23,12 +23,6 @@ sealed class Screens {
     object FavoritesScreen : Screens()
 
     @Serializable
-    object AlertsScreen : Screens()
-
-    @Serializable
-    object Settings : Screens()
-
-    @Serializable
     object AddFavoriteScreen : Screens()
 
     @Serializable
@@ -36,6 +30,16 @@ sealed class Screens {
         val lat: Double,
         val lon: Double
     ) : Screens()
+
+
+    @Serializable
+    object AlertsScreen : Screens()
+
+    @Serializable
+    object AddAlertScreen : Screens()
+
+    @Serializable
+    object Settings : Screens()
 
 
     companion object {

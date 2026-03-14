@@ -3,11 +3,11 @@ package com.example.weatherforecast.data.appPreferences
 import android.content.Context
 import android.location.Location
 import android.util.Log
+import com.example.weatherforecast.data.appPreferences.util.TempLocation
+import com.example.weatherforecast.data.appPreferences.util.UserSettings
 import com.example.weatherforecast.utils.AppConstants
 import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
-import kotlinx.coroutines.flow.asStateFlow
 
 
 class AppPreferences(val context: Context) {

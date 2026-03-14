@@ -1,10 +1,8 @@
 package com.example.weatherforecast.data.weather.dataSource.remote
 
-import com.example.weatherforecast.data.network.RetrofitHelper
 import com.example.weatherforecast.data.network.service.WeatherApiService
-import com.example.weatherforecast.data.weather.dataSource.local.entity.LatLonEntity
-import com.example.weatherforecast.data.weather.dataSource.remote.dto.forcast.ForecastResponse
-import com.example.weatherforecast.data.weather.dataSource.remote.dto.weather.CurrentWeatherResponse
+import com.example.weatherforecast.data.weather.model.dto.forcast.ForecastResponse
+import com.example.weatherforecast.data.weather.model.dto.weather.CurrentWeatherResponse
 import com.example.weatherforecast.utils.AppConstants
 
 class WeatherRemoteSource(private val weatherApiService: WeatherApiService) : WeatherRemoteSourceInterface {

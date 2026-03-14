@@ -1,9 +1,7 @@
 package com.example.weatherforecast.data.weather.dataSource.remote
 
-import com.example.weatherforecast.data.weather.dataSource.local.entity.LatLonEntity
-import com.example.weatherforecast.data.weather.dataSource.remote.dto.forcast.ForecastResponse
-import com.example.weatherforecast.data.weather.dataSource.remote.dto.weather.CurrentWeatherResponse
-import com.example.weatherforecast.utils.AppConstants
+import com.example.weatherforecast.data.weather.model.dto.forcast.ForecastResponse
+import com.example.weatherforecast.data.weather.model.dto.weather.CurrentWeatherResponse
 
 interface WeatherRemoteSourceInterface {
     suspend fun getCurrentWeather(

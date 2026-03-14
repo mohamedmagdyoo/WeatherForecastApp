@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -26,10 +25,8 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
@@ -45,23 +42,21 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
-import coil.request.ImageRequest
 import com.example.labs.R
 import com.example.weatherforecast.data.appPreferences.AppPreferences
-import com.example.weatherforecast.data.db.WeatherDatabase
+import com.example.weatherforecast.data.db.DataBaseHelper
 import com.example.weatherforecast.data.network.RetrofitHelper
 import com.example.weatherforecast.data.weather.WeatherRepo
 import com.example.weatherforecast.data.weather.dataSource.local.WeatherLocalSource
-import com.example.weatherforecast.data.weather.dataSource.local.entity.CurrentWeatherEntity
+import com.example.weatherforecast.data.weather.model.entity.CurrentWeatherEntity
 import com.example.weatherforecast.data.weather.dataSource.remote.WeatherRemoteSource
-import com.example.weatherforecast.data.weather.dataSource.remote.dto.forcast.DailyForecast
-import com.example.weatherforecast.data.weather.dataSource.remote.dto.forcast.ForecastResult
-import com.example.weatherforecast.data.weather.dataSource.remote.dto.forcast.HourlyForecast
+import com.example.weatherforecast.data.weather.model.dto.forcast.DailyForecast
+import com.example.weatherforecast.data.weather.model.dto.forcast.ForecastResult
+import com.example.weatherforecast.data.weather.model.dto.forcast.HourlyForecast
 import com.example.weatherforecast.ui.theme.AccentBlue
 import com.example.weatherforecast.ui.theme.CardBg
 import com.example.weatherforecast.ui.theme.DarkBlue
 import com.example.weatherforecast.ui.theme.MidBlue
-import com.example.weatherforecast.ui.theme.Pink40
 import com.example.weatherforecast.ui.theme.TextGrey
 import com.example.weatherforecast.ui.theme.TextWhite
 import com.example.weatherforecast.view.homeScreen.viewModel.HomeScreenState
@@ -79,7 +74,7 @@ fun HomeScreen() {
 
     // the key in remember means if this key changes, this remember block will be called again --> remember(key = ..)
     val factory = remember {
-        val db = WeatherDatabase.getInstance(appContext)
+        val db = DataBaseHelper.getInstance(appContext)
         val local = WeatherLocalSource(db.currentWeatherDao(), db.forecastDao(), db.favoriteDao())
         val remote = WeatherRemoteSource(RetrofitHelper.weatherService)
         val prefs = AppPreferences.getInstance(appContext)

@@ -1,14 +1,9 @@
 package com.example.weatherforecast.data.weather.dataSource.local
 
-import androidx.room.Dao
-import androidx.room.Delete
-import androidx.room.Insert
-import androidx.room.OnConflictStrategy
-import androidx.room.Query
-import com.example.weatherforecast.data.weather.dataSource.local.entity.CurrentWeatherEntity
-import com.example.weatherforecast.data.weather.dataSource.local.entity.FavoriteLocation
-import com.example.weatherforecast.data.weather.dataSource.local.entity.ForecastEntity
-import com.example.weatherforecast.data.weather.dataSource.local.entity.LatLonEntity
+import com.example.weatherforecast.data.weather.model.entity.CurrentWeatherEntity
+import com.example.weatherforecast.data.weather.model.entity.FavoriteLocation
+import com.example.weatherforecast.data.weather.model.entity.ForecastEntity
+import com.example.weatherforecast.data.weather.model.entity.LatLonEntity
 import kotlinx.coroutines.flow.Flow
 
 interface WeatherLocalSourceInterface {

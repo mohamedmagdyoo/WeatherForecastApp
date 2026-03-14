@@ -34,10 +34,11 @@ import com.example.weatherforecast.data.location.LocationService
 import com.example.weatherforecast.ui.theme.WeatherForecastTheme
 import com.example.weatherforecast.utils.AppConstants
 import com.example.weatherforecast.utils.LanguageHelper
-import com.example.weatherforecast.view.addToFavoriteScreen.view.AddFavoriteScreen
-import com.example.weatherforecast.view.alertScreen.AlertScreen
-import com.example.weatherforecast.view.favoriteLocationDetails.view.FavoriteDetailScreen
-import com.example.weatherforecast.view.favoritesScreen.view.FavoritesScreen
+import com.example.weatherforecast.view.alertScreens.addAlertScreen.view.AddAlertScreen
+import com.example.weatherforecast.view.favoriteScreens.addToFavoriteScreen.view.AddFavoriteScreen
+import com.example.weatherforecast.view.alertScreens.alertScreen.view.AlertScreen
+import com.example.weatherforecast.view.favoriteScreens.favoriteLocationDetails.view.FavoriteDetailScreen
+import com.example.weatherforecast.view.favoriteScreens.favoriteScreen.view.FavoritesScreen
 import com.example.weatherforecast.view.homeScreen.view.HomeScreen
 import com.example.weatherforecast.view.settingsScreen.view.SettingsScreen
 import kotlinx.coroutines.launch
@@ -230,7 +231,11 @@ fun SetUpNavGraph(
         }
 
         composable<Screens.AlertsScreen> {
-            AlertScreen()
+            AlertScreen(navController)
+        }
+
+        composable<Screens.AddAlertScreen>{
+            AddAlertScreen(navController)
         }
 
         composable<Screens.Settings> {

@@ -1,7 +1,7 @@
 package com.example.weatherforecast.data.network.service
 
-import com.example.weatherforecast.data.weather.dataSource.remote.dto.forcast.ForecastResponse
-import com.example.weatherforecast.data.weather.dataSource.remote.dto.weather.CurrentWeatherResponse
+import com.example.weatherforecast.data.weather.model.dto.forcast.ForecastResponse
+import com.example.weatherforecast.data.weather.model.dto.weather.CurrentWeatherResponse
 import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Query

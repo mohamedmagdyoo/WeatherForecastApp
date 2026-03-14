@@ -1,9 +1,9 @@
 package com.example.weatherforecast.data.weather
 
-import com.example.weatherforecast.data.weather.dataSource.local.entity.CurrentWeatherEntity
-import com.example.weatherforecast.data.weather.dataSource.local.entity.FavoriteLocation
-import com.example.weatherforecast.data.weather.dataSource.local.entity.LatLonEntity
-import com.example.weatherforecast.data.weather.dataSource.remote.dto.forcast.ForecastResult
+import com.example.weatherforecast.data.weather.model.entity.CurrentWeatherEntity
+import com.example.weatherforecast.data.weather.model.entity.FavoriteLocation
+import com.example.weatherforecast.data.weather.model.entity.LatLonEntity
+import com.example.weatherforecast.data.weather.model.dto.forcast.ForecastResult
 import kotlinx.coroutines.flow.Flow
 
 interface WeatherRepoInterface {

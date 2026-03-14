@@ -39,4 +39,12 @@
     <string name="add_favorite">Add Favorite</string>
     <string name="delete">Delete</string>
     <string name="save">Save</string>
+    <string name="add">Add</string>
+    <string name="back">Back</string>
+    <string name="new_alert">New Alert</string>
+    <string name="alert_type">Alert Type</string>
+    <string name="start_time">Start Time</string>
+    <string name="end_time">End Time</string>
+    <string name="alarm_type">Alarm Type</string>
+    <string name="end_time_must_be_after_start_time">End time must be after start time</string>
 </resources>

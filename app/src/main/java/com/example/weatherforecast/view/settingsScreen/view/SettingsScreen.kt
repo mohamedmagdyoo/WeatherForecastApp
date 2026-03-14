@@ -37,10 +37,9 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
 import com.example.labs.R
 import com.example.weatherforecast.data.appPreferences.AppPreferences
-import com.example.weatherforecast.data.db.WeatherDatabase
+import com.example.weatherforecast.data.db.DataBaseHelper
 import com.example.weatherforecast.data.network.RetrofitHelper
 import com.example.weatherforecast.data.weather.WeatherRepo
 import com.example.weatherforecast.data.weather.dataSource.local.WeatherLocalSource
@@ -52,14 +51,12 @@ import com.example.weatherforecast.ui.theme.MidBlue
 import com.example.weatherforecast.ui.theme.TextGrey
 import com.example.weatherforecast.ui.theme.TextWhite
 import com.example.weatherforecast.utils.AppConstants
-import com.example.weatherforecast.view.addToFavoriteScreen.view.MainMapScreen
-import com.example.weatherforecast.view.addToFavoriteScreen.viewModel.AddToFavoriteViewModel
-import com.example.weatherforecast.view.addToFavoriteScreen.viewModel.AddToFavoriteViewModelFactory
-import com.example.weatherforecast.view.mainActivity.Screens
+import com.example.weatherforecast.view.favoriteScreens.addToFavoriteScreen.view.MainMapScreen
+import com.example.weatherforecast.view.favoriteScreens.addToFavoriteScreen.viewModel.AddToFavoriteViewModel
+import com.example.weatherforecast.view.favoriteScreens.addToFavoriteScreen.viewModel.AddToFavoriteViewModelFactory
 import com.example.weatherforecast.view.settingsScreen.viewModel.SettingsScreenState
 import com.example.weatherforecast.view.settingsScreen.viewModel.SettingsViewModel
 import com.example.weatherforecast.view.settingsScreen.viewModel.SettingsViewModelFactory
-import androidx.compose.runtime.collectAsState
 
 @Composable
 fun SettingsScreen(navController: NavHostController) {
@@ -90,7 +87,7 @@ fun SettingsScreen(navController: NavHostController) {
 
         //======================================================
         val appContext = LocalContext.current.applicationContext
-        val db = WeatherDatabase.getInstance(appContext)
+        val db = DataBaseHelper.getInstance(appContext)
         val weatherDao = db.currentWeatherDao()
         val forecastDao = db.forecastDao()
         val favoriteDao = db.favoriteDao()

@@ -4,10 +4,10 @@ package com.example.weatherforecast.data.weather.dataSource.local
 import com.example.weatherforecast.data.db.dao.CurrentWeatherDao
 import com.example.weatherforecast.data.db.dao.FavoriteDao
 import com.example.weatherforecast.data.db.dao.ForecastDao
-import com.example.weatherforecast.data.weather.dataSource.local.entity.CurrentWeatherEntity
-import com.example.weatherforecast.data.weather.dataSource.local.entity.FavoriteLocation
-import com.example.weatherforecast.data.weather.dataSource.local.entity.ForecastEntity
-import com.example.weatherforecast.data.weather.dataSource.local.entity.LatLonEntity
+import com.example.weatherforecast.data.weather.model.entity.CurrentWeatherEntity
+import com.example.weatherforecast.data.weather.model.entity.FavoriteLocation
+import com.example.weatherforecast.data.weather.model.entity.ForecastEntity
+import com.example.weatherforecast.data.weather.model.entity.LatLonEntity
 import kotlinx.coroutines.flow.Flow
 
 class WeatherLocalSource : WeatherLocalSourceInterface {

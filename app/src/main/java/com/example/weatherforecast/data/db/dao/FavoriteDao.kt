@@ -5,7 +5,7 @@ import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import com.example.weatherforecast.data.weather.dataSource.local.entity.FavoriteLocation
+import com.example.weatherforecast.data.weather.model.entity.FavoriteLocation
 import kotlinx.coroutines.flow.Flow
 
 @Dao
