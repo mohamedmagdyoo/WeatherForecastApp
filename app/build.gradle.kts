@@ -75,6 +75,7 @@ dependencies {
     implementation(libs.androidx.compose.material3)
     implementation(libs.androidx.material3)
     implementation(libs.androidx.benchmark.traceprocessor)
+    implementation(libs.androidx.junit.ktx)
 
     // Testing
     testImplementation(libs.junit)
@@ -126,5 +127,10 @@ dependencies {
     implementation(libs.maps.compose)
 // Places SDK
     implementation(libs.places)
+
+    //for coroutine worker
+    implementation("androidx.work:work-runtime-ktx:2.9.0")
+
+
 
 }

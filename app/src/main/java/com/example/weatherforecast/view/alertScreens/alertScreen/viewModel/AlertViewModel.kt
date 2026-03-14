@@ -22,12 +22,6 @@ class AlertViewModel(
             initialValue = emptyList()
         )
 
-    fun insertAlert(alert: Alert) {
-        viewModelScope.launch {
-            repo.insertAlert(alert)
-        }
-    }
-
     fun deleteAlert(alert: Alert) {
         viewModelScope.launch {
             repo.deleteAlert(alert)

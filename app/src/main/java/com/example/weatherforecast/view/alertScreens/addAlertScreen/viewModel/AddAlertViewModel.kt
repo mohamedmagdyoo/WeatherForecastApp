@@ -1,6 +1,7 @@
 package com.example.weatherforecast.view.alertScreens.addAlertScreen.viewModel
 
 
+import android.app.Application
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
@@ -56,6 +57,7 @@ class AddAlertViewModel(
         }
         viewModelScope.launch {
             repo.insertAlert(alert)
+            //Here i have to also scheduler the alarm with
             _screenState.value = ScreenState.OnSelectedDateCorrect
         }
     }
