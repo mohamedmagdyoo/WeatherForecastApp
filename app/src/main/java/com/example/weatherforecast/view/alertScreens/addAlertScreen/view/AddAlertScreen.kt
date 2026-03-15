@@ -49,7 +49,7 @@ fun AddAlertScreen(navController: NavController) {
     val alertDao = db.alertDao()
     val alertLocalDataSource = AlertLocalDataSource(alertDao)
     val repo = AlertRepo(alertLocalDataSource)
-    val factory = AddAlertViewModelFactory(repo)
+    val factory = AddAlertViewModelFactory(context, repo)
     val viewModel = viewModel<AddAlertViewModel>(factory = factory)
 
     val alertState by viewModel.alertState.collectAsStateWithLifecycle()
@@ -66,13 +66,17 @@ fun AddAlertScreen(navController: NavController) {
 
         when (screenState) {
             ScreenState.OnSelectedDateWrong -> {
-                ShowWrongDialog()
+                ShowWrongSnackbar(stringResource(R.string.start_time_must_be_after_time_right_now))
             }
 
             ScreenState.Ideal -> {}
 
             ScreenState.OnSelectedDateCorrect -> {
                 navController.popBackStack()
+            }
+
+            ScreenState.OnUnSelectedDate -> {
+                ShowWrongSnackbar("UnSelected Date Check Again")
             }
         }
 
@@ -129,7 +133,12 @@ fun AddAlertScreen(navController: NavController) {
                     onValueChange = { input ->
                         input.toDoubleOrNull()?.also { viewModel.onAlertValueChange(it) }
                     },
-                    placeholder = { Text("e.g. 40", color = Color.White.copy(alpha = 0.4f)) },
+                    placeholder = {
+                        Text(
+                            "e.g. 40 (or more)",
+                            color = Color.White.copy(alpha = 0.4f)
+                        )
+                    },
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
                     modifier = Modifier.fillMaxWidth(),
                     colors = OutlinedTextFieldDefaults.colors(
@@ -147,14 +156,6 @@ fun AddAlertScreen(navController: NavController) {
             TimePickerCard(
                 defaultTime = alertState.startTime,
                 onTimePicked = { viewModel.onStartTimeChange(it) }
-            )
-
-            // End Time
-            SectionLabel(stringResource(R.string.end_time))
-            TimePickerCard(
-                defaultTime = alertState.endTime,
-
-                onTimePicked = { viewModel.onEndTimeChange(it) }
             )
 
             // Alarm Kind
@@ -204,7 +205,7 @@ fun AddAlertScreen(navController: NavController) {
 
 
 @Composable
-fun ShowWrongDialog() {
+fun ShowWrongSnackbar(message: String) {
     Box(
         modifier = Modifier.fillMaxSize()
     ) {
@@ -213,7 +214,7 @@ fun ShowWrongDialog() {
                 .align(Alignment.BottomCenter)
         ) {
             Text(
-                text = stringResource(R.string.end_time_must_be_after_start_time),
+                text = message,
                 color = Color.Red,
                 fontSize = 16.sp,
                 fontWeight = FontWeight.Bold,

@@ -5,13 +5,13 @@ import com.example.weatherforecast.data.db.dao.AlertDao
 import kotlinx.coroutines.flow.Flow
 
 class AlertLocalDataSource(private val alertDao: AlertDao) : AlertLocalDataSourceInterface {
-    override suspend fun insertAlert(alert: Alert): Result<Unit> {
+    override suspend fun insertAlert(alert: Alert): Result<Long> {
         try {
-            alertDao.insertAlert(alert)
+            val generatedId = alertDao.insertAlert(alert)
+            return Result.success(generatedId)
         } catch (ex: Exception) {
             return Result.failure(ex)
         }
-        return Result.success(Unit)
     }
 
     override suspend fun deleteAlert(alert: Alert): Result<Unit> {
@@ -39,7 +39,7 @@ class AlertLocalDataSource(private val alertDao: AlertDao) : AlertLocalDataSourc
         }
     }
 
-    override suspend fun getAlertById(alertId: Int): Result<Alert> {
+    override suspend fun getAlertById(alertId: Long): Result<Alert> {
         try {
             val alert =
                 alertDao.getAlertById(alertId = alertId)

@@ -1,5 +1,10 @@
 package com.example.weatherforecast.view.alertScreens.alertScreen.view
 
+import android.Manifest
+import android.os.Build
+import android.util.Log
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts.*
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -12,7 +17,9 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
@@ -23,39 +30,74 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.LifecycleEventEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.labs.R
-import com.example.weatherforecast.data.alert.AlertRepo
-import com.example.weatherforecast.data.alert.dataSorce.local.AlertLocalDataSource
+import com.example.weatherforecast.MyApplication
 import com.example.weatherforecast.data.alert.model.Alert
 import com.example.weatherforecast.data.alert.model.AlertType
 import com.example.weatherforecast.data.alert.model.toDateString
 import com.example.weatherforecast.data.db.DataBaseHelper
 import com.example.weatherforecast.ui.theme.DarkBlue
 import com.example.weatherforecast.ui.theme.MidBlue
+import com.example.weatherforecast.utils.AppConstants
+import com.example.weatherforecast.view.alertScreens.addAlertScreen.view.ShowWrongSnackbar
+import com.example.weatherforecast.view.alertScreens.alertScreen.viewModel.AlertState
 import com.example.weatherforecast.view.alertScreens.alertScreen.viewModel.AlertViewModel
 import com.example.weatherforecast.view.alertScreens.alertScreen.viewModel.AlertViewModelFactory
 import com.example.weatherforecast.view.mainActivity.Screens
 
+
 @Composable
 fun AlertScreen(navController: NavController) {
-    //===============================
 
+    //===============================
     val context = LocalContext.current.applicationContext
-    val alertDao = DataBaseHelper.getInstance(context).alertDao()
-    val localDataSource = AlertLocalDataSource(alertDao)
-    val alertRepo = AlertRepo(localDataSource)
+    val appContainer = (context as MyApplication).appContainer
+    val alertRepo = appContainer.alertRepo
     val factory = AlertViewModelFactory(alertRepo)
     val vm = viewModel<AlertViewModel>(factory = factory)
     //===============================
     val alertList by vm.alerts.collectAsStateWithLifecycle()
+    val screenState by vm.screenState.collectAsStateWithLifecycle()
+    val snackbarHostState = remember { SnackbarHostState() }
+    val permissionMessage =
+        stringResource(R.string.please_grant_notification_permission_to_use_this_feature)
+
+    //Ask for permission to send notification
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+        val launcher = rememberLauncherForActivityResult(
+            RequestPermission()
+        ) { isGranted ->
+            if (!isGranted) {
+                Log.d(AppConstants.TAG, "AlertScreen: !isGranted")
+                vm.onDeniedPermeation()
+            }
+        }
+        LaunchedEffect(Unit) {
+            launcher.launch(Manifest.permission.POST_NOTIFICATIONS)
+        }
+    }
+
+    //Used LaunchedEffect cause we have snackBar and nav
+    LaunchedEffect(screenState) {
+        when (screenState) {
+            AlertState.Ideal -> {}
+            AlertState.OnDenied -> {
+                snackbarHostState.showSnackbar(permissionMessage)
+                navController.navigate(Screens.HomeScreen)
+            }
+        }
+    }
 
     Scaffold(
+        snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
         floatingActionButton = {
             FloatingActionButton(
-                onClick = { navController.navigate(Screens.AddAlertScreen) }, // nav to add alert screen
+                onClick = { onClickToAddAlert(navController) }, // nav to add alert screen
             ) {
                 Icon(
                     imageVector = Icons.Default.Add,
@@ -85,6 +127,10 @@ fun AlertScreen(navController: NavController) {
         }
     }
 
+}
+
+fun onClickToAddAlert(navController: NavController) {
+    navController.navigate(Screens.AddAlertScreen)
 }
 
 @Composable

@@ -5,11 +5,11 @@ import kotlinx.coroutines.flow.Flow
 
 interface AlertRepoInterface {
 
-    suspend fun insertAlert(alert: Alert): Result<Unit>
+    suspend fun insertAlert(alert: Alert): Result<Long>
     suspend fun deleteAlert(alert: Alert): Result<Unit>
     fun getAllAlerts(): Flow<List<Alert>>
     suspend fun updateAlertActivation(alertId: Int, isActive: Boolean): Result<Unit>
-    suspend fun getAlertById(alertId: Int): Result<Alert>
+    suspend fun getAlertById(alertId: Long): Result<Alert>
 
 
 }

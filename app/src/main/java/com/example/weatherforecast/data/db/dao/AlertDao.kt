@@ -10,7 +10,7 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface AlertDao {
     @Insert
-    suspend fun insertAlert(alert: Alert)
+    suspend fun insertAlert(alert: Alert): Long
 
     @Delete
     suspend fun deleteAlert(alert: Alert)
@@ -22,5 +22,5 @@ interface AlertDao {
     suspend fun updateAlertActivation(alertId: Int, isActive: Boolean)
 
     @Query("SELECT * FROM alerts WHERE id = :alertId")
-    suspend fun getAlertById(alertId: Int): Alert?
+    suspend fun getAlertById(alertId: Long): Alert?
 }

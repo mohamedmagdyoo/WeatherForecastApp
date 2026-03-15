@@ -5,7 +5,7 @@ import com.example.weatherforecast.data.alert.model.Alert
 import kotlinx.coroutines.flow.Flow
 
 class AlertRepo(private val localDataSource: AlertLocalDataSource) : AlertRepoInterface {
-    override suspend fun insertAlert(alert: Alert): Result<Unit> {
+    override suspend fun insertAlert(alert: Alert): Result<Long> {
         return localDataSource.insertAlert(alert)
     }
 
@@ -24,7 +24,7 @@ class AlertRepo(private val localDataSource: AlertLocalDataSource) : AlertRepoIn
         return localDataSource.updateAlertActivation(alertId, isActive)
     }
 
-    override suspend fun getAlertById(alertId: Int): Result<Alert> {
+    override suspend fun getAlertById(alertId: Long): Result<Alert> {
         return localDataSource.getAlertById(alertId)
     }
 }
