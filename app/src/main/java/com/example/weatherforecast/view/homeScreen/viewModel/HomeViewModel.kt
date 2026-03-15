@@ -127,4 +127,3 @@ class HomeViewModelFactory(val weatherRepo: WeatherRepo, val appPreferences: App
         return HomeViewModel(weatherRepo, appPreferences) as T
     }
 }
-

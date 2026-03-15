@@ -1,10 +1,11 @@
 package com.example.weatherforecast.data.alert
 
 import com.example.weatherforecast.data.alert.dataSorce.local.AlertLocalDataSource
+import com.example.weatherforecast.data.alert.dataSorce.local.AlertLocalDataSourceInterface
 import com.example.weatherforecast.data.alert.model.Alert
 import kotlinx.coroutines.flow.Flow
 
-class AlertRepo(private val localDataSource: AlertLocalDataSource) : AlertRepoInterface {
+class AlertRepo(private val localDataSource: AlertLocalDataSourceInterface) : AlertRepoInterface {
     override suspend fun insertAlert(alert: Alert): Result<Long> {
         return localDataSource.insertAlert(alert)
     }
