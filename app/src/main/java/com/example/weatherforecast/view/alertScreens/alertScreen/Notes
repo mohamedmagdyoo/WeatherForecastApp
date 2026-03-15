@@ -1,0 +1,8 @@
+How can we get an alarm on this range of time
+1) create a class and extend from coroutine worker
+2) put our logic that we want to do
+    1)get the input ( alarm id)
+    2) check if is active
+    3) push notfication
+3) make a requeste and enquee with work manager
+4) this will be one time request

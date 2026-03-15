@@ -1,0 +1,16 @@
+
+/*
+* UI
+* alert screen
+* 1) want to make a screen that has lazy column item -> alertItem from db
+* 2) another screen to insert new alerts has ( four cards -> (temp,wind,rain,storm))
+* make it this time as an enum with name alertTypes
+*
+*/
+
+/*
+* Data Layer (Will has it's own PK)
+* 1) need an entity for alert ( id, alertType, alertValue, startTime, endTime, active(Boolean)
+* 2) Dao should has (insert,delete,getAll,getAlert) ||dataSource,Repo
+* 3) and we need for alarm manger or (worker) to check if the time and is active or not then push notification
+* */

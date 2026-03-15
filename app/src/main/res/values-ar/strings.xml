@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">تطبيق الطقس</string>
+    <string name="humidity">الرطوبة</string>
+    <string name="wind">الرياح</string>
+    <string name="pressure">الضغط</string>
+    <string name="clouds">الغيوم</string>
+    <string name="feels_like">يبدو كأنه %1$d°</string>
+    <string name="m_s">م/ث</string>
+    <string name="mph">ميل/س</string>
+    <string name="today">اليوم</string>
+    <string name="_5_days">٥ أيام</string>
+    <string name="location_fetched_successfully">تم تحديد الموقع بنجاح</string>
+    <string name="could_not_get_location_using_last_known_or_the_default_location">تعذّر تحديد الموقع، سيتم استخدام آخر موقع معروف</string>
+    <string name="location_permission_needed_will_use_the_default_location_or_the_last_known">إذن الموقع مطلوب، سيتم استخدام الموقع الافتراضي</string>
+    <string name="please_enable_gps">يرجى تفعيل GPS</string>
+    <string name="home">الرئيسية</string>
+    <string name="favorites">المفضلة</string>
+    <string name="alerts">التنبيهات</string>
+    <string name="settings">الإعدادات</string>
+    <string name="wind_speed">سرعة الرياح</string>
+    <string name="temperature_unit">وحدة الحرارة</string>
+    <string name="celsius_c">مئوية °C</string>
+    <string name="fahrenheit_f">فهرنهايت °F</string>
+    <string name="kelvin_k">كلفن K</string>
+    <string name="language">اللغة</string>
+    <string name="english">الإنجليزية</string>
+    <string name="arabic">العربية</string>
+    <string name="location_source">مصدر الموقع</string>
+    <string name="gps">GPS</string>
+    <string name="map">الخريطة</string>
+    <string name="notifications">الإشعارات</string>
+    <string name="enable_weather_alerts">تفعيل تنبيهات الطقس</string>
+    <string name="fetching_weather">جارٍ تحميل الطقس…</string>
+</resources>

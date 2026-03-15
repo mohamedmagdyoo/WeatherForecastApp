@@ -1,8 +1,10 @@
+import com.android.build.gradle.internal.cxx.configure.gradleLocalProperties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
-    alias(libs.plugins.ksp)               // Note: ksp version must match kotlin version in libs.versions.toml
+    alias(libs.plugins.ksp)
     kotlin("plugin.serialization") version "2.0.21"
     id("kotlin-parcelize")
 }
@@ -20,6 +22,9 @@ android {
         versionCode = 1
         versionName = "1.0"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        val properties = gradleLocalProperties(rootDir, providers)
+        manifestPlaceholders["MAPS_API_KEY"] = properties["MAPS_API_KEY"] ?: ""
+        buildConfigField("String", "MAPS_API_KEY", "\"${properties["MAPS_API_KEY"]}\"")
     }
 
     buildTypes {
@@ -32,8 +37,6 @@ android {
         }
     }
 
-    // Note: jvmToolchain(17) in kotlin{} block below handles this automatically
-    // but keep compileOptions in sync to avoid JVM mismatch errors with KSP
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
@@ -41,11 +44,23 @@ android {
 
     buildFeatures {
         compose = true
+        buildConfig = true
+    }
+
+    // fixes META-INF conflict from MockK + JUnit
+    packaging {
+        resources {
+            excludes += setOf(
+                "META-INF/LICENSE.md",
+                "META-INF/LICENSE-notice.md",
+                "META-INF/NOTICE.md",
+                "META-INF/NOTICE",
+                "META-INF/LICENSE"
+            )
+        }
     }
 }
 
-// Note: jvmToolchain sets Java + Kotlin + KSP all to same JVM version in one place
-// replaces the need for kotlinOptions { jvmTarget = "17" } separately
 kotlin {
     jvmToolchain(17)
 }
@@ -55,12 +70,11 @@ dependencies {
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.activity.compose)
 
-    // Lifecycle + lifecycleScope support
-    implementation(libs.androidx.lifecycle.runtime.ktx)
+    // Lifecycle
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.lifecycle.viewmodel.ktx)
 
-    // Compose BOM --> manages all compose library versions automatically
+    // Compose BOM
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.compose.ui)
     implementation(libs.androidx.compose.ui.graphics)
@@ -68,44 +82,67 @@ dependencies {
     implementation(libs.androidx.compose.material3)
     implementation(libs.androidx.material3)
 
-    // Testing
-    testImplementation(libs.junit)
-    androidTestImplementation(libs.androidx.junit)
-    androidTestImplementation(libs.androidx.espresso.core)
-    androidTestImplementation(platform(libs.androidx.compose.bom))
-    androidTestImplementation(libs.androidx.compose.ui.test.junit4)
-    debugImplementation(libs.androidx.compose.ui.tooling)
-    debugImplementation(libs.androidx.compose.ui.test.manifest)
-
     // Google Play Services
     implementation(libs.play.services.location)
+    implementation(libs.play.services.maps)
 
-    // Coil --> image loading for Compose
+    // Coil
     implementation(libs.coil.compose)
+    implementation(libs.coil.compose.v250)
+    implementation(libs.coil.svg)
 
-    // Gson --> standalone JSON serialization
-    // Note: converter-gson already bundles gson internally, but explicit dependency gives version control
+    // Gson + Retrofit
     implementation(libs.gson)
-
-    // Retrofit --> 2 dependencies
     implementation(libs.retrofit)
     implementation(libs.converter.gson)
 
-    // WorkManager --> background task scheduling
+    // WorkManager
     implementation(libs.work.runtime.ktx)
 
-    // Room --> 3 dependencies
-    // Note: room-compiler uses ksp() not implementation() — required for code generation
+    // Room
     implementation(libs.room.runtime)
     implementation(libs.room.ktx)
     ksp(libs.room.compiler)
 
-    //Navigation
+    // Navigation
     implementation(libs.navigation.compose)
     implementation(libs.kotlinx.serialization.json)
 
-    //Icons
+    // Icons
     implementation(libs.androidx.compose.material.icons.core)
     implementation(libs.androidx.compose.material.icons.extended)
     implementation(libs.material3)
+
+    // Maps + Places
+    implementation(libs.maps.compose)
+    implementation(libs.places)
+
+    // Compose debug
+    debugImplementation(libs.androidx.compose.ui.tooling)
+    debugImplementation(libs.androidx.compose.ui.test.manifest)
+
+    // ========== Unit Tests ==========
+    testImplementation("junit:junit:4.13.2")
+    testImplementation("androidx.test:core-ktx:1.5.0")
+    testImplementation("androidx.test.ext:junit-ktx:1.1.5")
+    testImplementation("androidx.arch.core:core-testing:2.2.0")
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.8.0")
+    testImplementation("org.robolectric:robolectric:4.16.1")
+    testImplementation("io.mockk:mockk:1.14.0")
+    testImplementation("app.cash.turbine:turbine:1.0.0")
+
+    // ========== Instrumented Tests ==========
+    androidTestImplementation("androidx.room:room-testing:2.6.1")
+    androidTestImplementation("androidx.test.ext:junit:1.1.5")
+    androidTestImplementation("androidx.test:core:1.5.0")
+    androidTestImplementation("androidx.test:runner:1.5.2")
+    androidTestImplementation("androidx.test:rules:1.5.0")
+    androidTestImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.8.0")
+    androidTestImplementation("androidx.arch.core:core-testing:2.2.0")
+    androidTestImplementation("app.cash.turbine:turbine:1.0.0")
+    androidTestImplementation("io.mockk:mockk-android:1.14.0")
+    androidTestImplementation(platform(libs.androidx.compose.bom))
+    androidTestImplementation(libs.androidx.compose.ui.test.junit4)
+    androidTestImplementation(libs.androidx.espresso.core)
+    androidTestImplementation(libs.androidx.junit)
 }
