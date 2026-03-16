@@ -10,6 +10,11 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.SnackbarResult
+import androidx.compose.material3.SnackbarResult.ActionPerformed
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.compose.rememberNavController
@@ -28,6 +33,7 @@ class MainActivity : ComponentActivity() {
 
     private lateinit var appPreferences: AppPreferences
     private lateinit var locationService: LocationService
+    private val snackbarHostState = SnackbarHostState()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -39,6 +45,7 @@ class MainActivity : ComponentActivity() {
             val navController = rememberNavController()
             WeatherForecastTheme {
                 Scaffold(
+                    snackbarHost = { SnackbarHost(snackbarHostState) },
                     modifier = Modifier.fillMaxSize(),
                     bottomBar = { WeatherBottomBar(navController) }
                 ) { innerPadding ->
@@ -50,7 +57,6 @@ class MainActivity : ComponentActivity() {
             }
         }
 
-        //Collectors
         observeOnLanguageChange()
         observeOnLocationMethodChange()
     }
@@ -63,8 +69,7 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-
-    @Deprecated("This method has been deprecated in favor of using the Activity Result API\n      which brings increased type safety via an {@link ActivityResultContract} and the prebuilt\n      contracts for common intents available in\n      {@link androidx.activity.result.contract.ActivityResultContracts}, provides hooks for\n      testing, and allow receiving results in separate, testable classes independent from your\n      activity. Use\n      {@link #registerForActivityResult(ActivityResultContract, ActivityResultCallback)} passing\n      in a {@link RequestMultiplePermissions} object for the {@link ActivityResultContract} and\n      handling the result in the {@link ActivityResultCallback#onActivityResult(Object) callback}.")
+    @Deprecated("This method has been deprecated in favor of using the Activity Result API")
     override fun onRequestPermissionsResult(
         requestCode: Int,
         permissions: Array<String>,
@@ -80,28 +85,25 @@ class MainActivity : ComponentActivity() {
                     manageLocationState(locationState)
                 }
             } else {
-                Toast.makeText(
-                    this,
-                    message,
-                    Toast.LENGTH_LONG
-                ).show()
-
+                Toast.makeText(this, message, Toast.LENGTH_LONG).show()
             }
         }
     }
 
-    fun manageLocationState(locationState: LocationResultStates) {
+    fun manageLocationState(
+        locationState: LocationResultStates
+    ) {
         when (locationState) {
             LocationResultStates.GpsDisabled -> {
-                if (true) {
-                    Toast.makeText(
-                        this@MainActivity,
-                        getString(R.string.please_enable_gps),
-                        Toast.LENGTH_LONG
-                    ).show()
-                } else {
-                    isAsked = true
-                    locationService.getGpsEnabled()
+                lifecycleScope.launch {
+                    val result = snackbarHostState.showSnackbar(
+                        message = getString(R.string.please_enable_gps),
+                        actionLabel = getString(R.string.enable),
+                        duration = SnackbarDuration.Long
+                    )
+                    if (result == ActionPerformed) {
+                        locationService.getGpsEnabled()
+                    }
                 }
             }
 
@@ -114,17 +116,30 @@ class MainActivity : ComponentActivity() {
             }
 
             LocationResultStates.PermissionDenied -> {
-                if (isAsked) {
-                    Toast.makeText(
-                        this@MainActivity,
-                        getString(R.string.location_permission_needed_will_use_the_default_location_or_the_last_known),
-                        Toast.LENGTH_LONG
-                    ).show()
-                } else {
-                    isAsked = true
-                    locationService.getLocationPermeation()
+                lifecycleScope.launch {
+                    val result = snackbarHostState.showSnackbar(
+                        message = (getString(R.string.enable_location_permeation)),
+                        actionLabel = getString(R.string.enable),
+                        duration = SnackbarDuration.Short
+                    )
+
+                    if (result == ActionPerformed) {
+                        locationService.getLocationPermeation()
+                    }
+
                 }
                 AppPreferences.getInstance(this).notifyChanged()
+
+//                if (isAsked) {
+//                    Toast.makeText(
+//                        this@MainActivity,
+//                        getString(R.string.location_permission_needed_will_use_the_default_location_or_the_last_known),
+//                        Toast.LENGTH_LONG
+//                    ).show()
+//                } else {
+//                    isAsked = true
+//                    locationService.getLocationPermeation()
+//                }
             }
 
             is LocationResultStates.Success -> {
@@ -151,7 +166,6 @@ class MainActivity : ComponentActivity() {
         super.attachBaseContext(newContext)
     }
 
-    //Collectors
     fun observeOnLanguageChange() {
         lifecycleScope.launch {
             appPreferences.languageChanged.collect { lang ->

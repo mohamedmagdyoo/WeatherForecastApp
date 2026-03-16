@@ -26,11 +26,11 @@ class HomeViewModel(
 
 
     init {
+        getScreenData()
         viewModelScope.launch {
             // here i collect any change with the setting even the location change
             appPreferences.settingsChanged.collect { newSettings ->
                 refreshData(newSettings)
-                getScreenData()
             }
         }
     }

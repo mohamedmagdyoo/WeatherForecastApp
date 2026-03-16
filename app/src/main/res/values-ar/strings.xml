@@ -58,4 +58,6 @@
     <string name="threshold">الحد: %1$s</string>
     <string name="temperature">الحراره</string>
     <string name="rain">المطر</string>
+    <string name="enable">اقبل</string>
+    <string name="enable_location_permeation">تفعيل صلاحية الموقع (سيتم استخدام الموقع الافتراضي)</string>
 </resources>

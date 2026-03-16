@@ -55,4 +55,6 @@
     <string name="threshold">Threshold: %1$s</string>
     <string name="temperature">Temperature</string>
     <string name="rain">Rain</string>
+    <string name="enable">Enable</string>
+    <string name="enable_location_permeation">Enable location permeation (will use default location)</string>
 </resources>
