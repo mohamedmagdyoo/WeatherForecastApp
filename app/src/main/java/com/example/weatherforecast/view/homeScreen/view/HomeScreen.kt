@@ -43,16 +43,12 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import com.example.labs.R
+import com.example.weatherforecast.MyApplication
 import com.example.weatherforecast.data.appPreferences.AppPreferences
-import com.example.weatherforecast.data.db.DataBaseHelper
-import com.example.weatherforecast.data.network.RetrofitHelper
-import com.example.weatherforecast.data.weather.WeatherRepo
-import com.example.weatherforecast.data.weather.dataSource.local.WeatherLocalSource
-import com.example.weatherforecast.data.weather.model.entity.CurrentWeatherEntity
-import com.example.weatherforecast.data.weather.dataSource.remote.WeatherRemoteSource
 import com.example.weatherforecast.data.weather.model.dto.forcast.DailyForecast
 import com.example.weatherforecast.data.weather.model.dto.forcast.ForecastResult
 import com.example.weatherforecast.data.weather.model.dto.forcast.HourlyForecast
+import com.example.weatherforecast.data.weather.model.entity.CurrentWeatherEntity
 import com.example.weatherforecast.ui.theme.AccentBlue
 import com.example.weatherforecast.ui.theme.CardBg
 import com.example.weatherforecast.ui.theme.DarkBlue
@@ -69,18 +65,14 @@ import java.util.Locale
 
 @Composable
 fun HomeScreen() {
-    //That will not ever change so no worry about recomposition
     val appContext = LocalContext.current.applicationContext
 
-    // the key in remember means if this key changes, this remember block will be called again --> remember(key = ..)
     val factory = remember {
-        val db = DataBaseHelper.getInstance(appContext)
-        val local = WeatherLocalSource(db.currentWeatherDao(), db.forecastDao(), db.favoriteDao())
-        val remote = WeatherRemoteSource(RetrofitHelper.weatherService)
         val prefs = AppPreferences.getInstance(appContext)
-        val repo = WeatherRepo(remote, local)
+        val repo = (appContext as MyApplication).appContainer.weatherRepo
         HomeViewModelFactory(repo, prefs)
     }
+
     val vm: HomeViewModel = viewModel(factory = factory)
 
     //Will not collect in on(stop,destroy)

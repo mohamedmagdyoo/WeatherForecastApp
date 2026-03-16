@@ -2,20 +2,38 @@ package com.example.weatherforecast.view.alertScreens.alertScreen.view
 
 import android.Manifest
 import android.os.Build
-import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts.*
+import androidx.activity.result.contract.ActivityResultContracts.RequestPermission
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material3.*
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.Switch
+import androidx.compose.material3.SwitchDefaults
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -30,8 +48,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.compose.LifecycleEventEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
@@ -40,11 +56,8 @@ import com.example.weatherforecast.MyApplication
 import com.example.weatherforecast.data.alert.model.Alert
 import com.example.weatherforecast.data.alert.model.AlertType
 import com.example.weatherforecast.data.alert.model.toDateString
-import com.example.weatherforecast.data.db.DataBaseHelper
 import com.example.weatherforecast.ui.theme.DarkBlue
 import com.example.weatherforecast.ui.theme.MidBlue
-import com.example.weatherforecast.utils.AppConstants
-import com.example.weatherforecast.view.alertScreens.addAlertScreen.view.ShowWrongSnackbar
 import com.example.weatherforecast.view.alertScreens.alertScreen.viewModel.AlertState
 import com.example.weatherforecast.view.alertScreens.alertScreen.viewModel.AlertViewModel
 import com.example.weatherforecast.view.alertScreens.alertScreen.viewModel.AlertViewModelFactory
@@ -53,28 +66,41 @@ import com.example.weatherforecast.view.mainActivity.Screens
 
 @Composable
 fun AlertScreen(navController: NavController) {
-
-    //===============================
     val context = LocalContext.current.applicationContext
-    val appContainer = (context as MyApplication).appContainer
-    val alertRepo = appContainer.alertRepo
-    val factory = AlertViewModelFactory(alertRepo)
+
+    val factory = remember {
+        val appContainer = (context as MyApplication).appContainer
+        val alertRepo = appContainer.alertRepo
+        AlertViewModelFactory(alertRepo)
+    }
     val vm = viewModel<AlertViewModel>(factory = factory)
+
     //===============================
     val alertList by vm.alerts.collectAsStateWithLifecycle()
     val screenState by vm.screenState.collectAsStateWithLifecycle()
+    //===============================
+
     val snackbarHostState = remember { SnackbarHostState() }
-    val permissionMessage =
-        stringResource(R.string.please_grant_notification_permission_to_use_this_feature)
+    //Used LaunchedEffect cause we have snackBar and nav (side effects)
+    LaunchedEffect(screenState) {
+        when (screenState) {
+            AlertState.Ideal -> {}
+            AlertState.OnDenied -> {
+                snackbarHostState
+                    .showSnackbar(context.getString(R.string.please_grant_notification_permission_to_use_this_feature))
+                navController.navigate(Screens.HomeScreen)
+            }
+
+        }
+    }
 
     //Ask for permission to send notification
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-        val launcher = rememberLauncherForActivityResult(
-            RequestPermission()
-        ) { isGranted ->
+        val launcher = rememberLauncherForActivityResult(RequestPermission()) { isGranted ->
             if (!isGranted) {
-                Log.d(AppConstants.TAG, "AlertScreen: !isGranted")
                 vm.onDeniedPermeation()
+            } else {
+                vm.onSuccessPermeation()
             }
         }
         LaunchedEffect(Unit) {
@@ -82,16 +108,6 @@ fun AlertScreen(navController: NavController) {
         }
     }
 
-    //Used LaunchedEffect cause we have snackBar and nav
-    LaunchedEffect(screenState) {
-        when (screenState) {
-            AlertState.Ideal -> {}
-            AlertState.OnDenied -> {
-                snackbarHostState.showSnackbar(permissionMessage)
-                navController.navigate(Screens.HomeScreen)
-            }
-        }
-    }
 
     Scaffold(
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
@@ -121,7 +137,12 @@ fun AlertScreen(navController: NavController) {
                     modifier = Modifier.padding(padding),
                     alertList = alertList,
                     onDelete = { alert -> vm.deleteAlert(alert) },
-                    onSwitch = { alert, isActive -> vm.updateAlertActivation(alert.id, isActive) }
+                    onSwitch = { alert, isActive ->
+                        vm.updateAlertActivation(
+                            alert.id,
+                            isActive
+                        )
+                    }
                 )
             }
         }

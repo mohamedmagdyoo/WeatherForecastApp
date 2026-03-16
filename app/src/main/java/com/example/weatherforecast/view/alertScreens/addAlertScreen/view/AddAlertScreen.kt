@@ -29,6 +29,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.labs.R
+import com.example.weatherforecast.MyApplication
 import com.example.weatherforecast.data.alert.AlertRepo
 import com.example.weatherforecast.data.alert.dataSorce.local.AlertLocalDataSource
 import com.example.weatherforecast.data.alert.model.AlarmKind
@@ -44,18 +45,19 @@ import java.util.Calendar
 
 @Composable
 fun AddAlertScreen(navController: NavController) {
-    val context = LocalContext.current.applicationContext
-    val db = DataBaseHelper.getInstance(context)
-    val alertDao = db.alertDao()
-    val alertLocalDataSource = AlertLocalDataSource(alertDao)
-    val repo = AlertRepo(alertLocalDataSource)
-    val factory = AddAlertViewModelFactory(context, repo)
-    val viewModel = viewModel<AddAlertViewModel>(factory = factory)
 
+    val appContext = LocalContext.current.applicationContext
+
+    val factory = remember {
+        val appContainer = (appContext as MyApplication).appContainer
+        val repo = appContainer.alertRepo
+        AddAlertViewModelFactory(appContext, repo)
+    }
+    val viewModel = viewModel<AddAlertViewModel>(factory = factory)
+//============================
     val alertState by viewModel.alertState.collectAsStateWithLifecycle()
     val screenState by viewModel.screenState.collectAsStateWithLifecycle()
-
-
+//============================
 
 
     Box(
@@ -76,7 +78,7 @@ fun AddAlertScreen(navController: NavController) {
             }
 
             ScreenState.OnUnSelectedDate -> {
-                ShowWrongSnackbar("UnSelected Date Check Again")
+                ShowWrongSnackbar(stringResource(R.string.unselected_date_check_again))
             }
         }
 
