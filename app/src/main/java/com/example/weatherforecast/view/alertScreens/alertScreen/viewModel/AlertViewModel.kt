@@ -42,6 +42,10 @@ class AlertViewModel(
     fun onDeniedPermeation() {
         _screenState.value = AlertState.OnDenied
     }
+
+    fun onSuccessPermeation() {
+        _screenState.value = AlertState.Ideal
+    }
 }
 
 sealed class AlertState {

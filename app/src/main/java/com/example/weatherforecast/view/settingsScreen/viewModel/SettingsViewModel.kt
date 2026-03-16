@@ -61,11 +61,13 @@ class SettingsViewModel(private val prefs: AppPreferences) : ViewModel() {
     }
 
     fun setLanguage(@StringRes langRes: Int) {
+        _settingsScreenState.value = SettingsScreenState.Loading
         _uiDataState.update { it.copy(language = langRes) }
         viewModelScope.launch { prefs.saveLanguage(langRes.toLanguageApi()) }
     }
 
     fun setLocationSource(source: Int) {
+        _settingsScreenState.value = SettingsScreenState.Loading
         _uiDataState.update { it.copy(locationSource = source) }
         viewModelScope.launch { prefs.setLocationMethod(source.toLocationSource()) }
         _selectedSourceOfLocation.value = source// gps , map

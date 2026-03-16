@@ -3,44 +3,22 @@ package com.example.weatherforecast.view.mainActivity
 import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Bundle
-import android.util.Log
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Icon
-import androidx.compose.material3.NavigationBar
-import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.lifecycleScope
-import androidx.navigation.NavDestination.Companion.hasRoute
-import androidx.navigation.NavHostController
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import androidx.navigation.toRoute
 import com.example.labs.R
 import com.example.weatherforecast.data.appPreferences.AppPreferences
 import com.example.weatherforecast.data.location.LocationResultStates
 import com.example.weatherforecast.data.location.LocationService
 import com.example.weatherforecast.ui.theme.WeatherForecastTheme
-import com.example.weatherforecast.utils.AppConstants
 import com.example.weatherforecast.utils.language.LanguageHelper
-import com.example.weatherforecast.view.alertScreens.addAlertScreen.view.AddAlertScreen
-import com.example.weatherforecast.view.favoriteScreens.addToFavoriteScreen.view.AddFavoriteScreen
-import com.example.weatherforecast.view.alertScreens.alertScreen.view.AlertScreen
-import com.example.weatherforecast.view.favoriteScreens.favoriteLocationDetails.view.FavoriteDetailScreen
-import com.example.weatherforecast.view.favoriteScreens.favoriteScreen.view.FavoritesScreen
-import com.example.weatherforecast.view.homeScreen.view.HomeScreen
-import com.example.weatherforecast.view.settingsScreen.view.SettingsScreen
 import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
@@ -49,7 +27,6 @@ class MainActivity : ComponentActivity() {
     }
 
     private lateinit var appPreferences: AppPreferences
-
     private lateinit var locationService: LocationService
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -93,26 +70,24 @@ class MainActivity : ComponentActivity() {
         permissions: Array<String>,
         grantResults: IntArray
     ) {
+        val message =
+            getString(R.string.location_permission_needed_will_use_the_default_location_or_the_last_known)
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (requestCode == LocationService.REQUEST_LOCATION_CODE) {
             if (grantResults.firstOrNull() == PackageManager.PERMISSION_GRANTED) {
-                Log.d(AppConstants.TAG, "onRequestPermissionsResult: granted ")
                 lifecycleScope.launch {
                     val locationState = locationService.tryGetLastLocation()
                     manageLocationState(locationState)
                 }
             } else {
-                Log.d(AppConstants.TAG, "onRequestPermissionsResult: notGranted ")
                 Toast.makeText(
                     this,
-                    "Location permission needed, will use the default location or the last known",
+                    message,
                     Toast.LENGTH_LONG
                 ).show()
 
             }
         }
-        Log.d(AppConstants.TAG, "onRequestPermissionsResult:REQUEST_LOCATION_CODE  ")
-
     }
 
     fun manageLocationState(locationState: LocationResultStates) {
@@ -157,7 +132,7 @@ class MainActivity : ComponentActivity() {
                     this@MainActivity,
                     getString(R.string.location_fetched_successfully),
                     Toast.LENGTH_SHORT
-                ).show()
+                )
             }
 
             LocationResultStates.AlreadySetWithMap -> {
@@ -195,86 +170,6 @@ class MainActivity : ComponentActivity() {
                     }
                 }
             }
-        }
-    }
-}
-
-
-@Composable
-fun SetUpNavGraph(
-    modifier: Modifier = Modifier,
-    navController: NavHostController,
-) {
-    NavHost(
-        navController = navController,
-        startDestination = Screens.HomeScreen,
-        modifier = modifier
-    ) {
-        composable<Screens.HomeScreen> {
-            HomeScreen()
-        }
-
-        composable<Screens.FavoritesScreen> {
-            FavoritesScreen(navController = navController)
-        }
-
-        composable<Screens.AddFavoriteScreen> {
-            AddFavoriteScreen(navController = navController)
-        }
-
-        composable<Screens.FavoriteDetailScreen> { backStackEntry ->
-            val args = backStackEntry.toRoute<Screens.FavoriteDetailScreen>()
-            FavoriteDetailScreen(
-                lat = args.lat,
-                lon = args.lon
-            )
-        }
-
-        composable<Screens.AlertsScreen> {
-            AlertScreen(navController)
-        }
-
-        composable<Screens.AddAlertScreen>{
-            AddAlertScreen(navController)
-        }
-
-        composable<Screens.Settings> {
-            SettingsScreen(navController)
-        }
-    }
-}
-
-@Composable
-fun WeatherBottomBar(navController: NavHostController) {
-    val currentBackStack by navController.currentBackStackEntryAsState()
-    val currentDestination = currentBackStack?.destination
-
-    NavigationBar {
-        Screens.bottomBarItems.forEachIndexed { index, item ->
-            val isSelected = currentDestination?.hasRoute(item.screen::class) == true
-
-            NavigationBarItem(
-                selected = isSelected,
-                onClick = {
-                    if (!isSelected) {
-                        navController.navigate(item.screen) {
-                            popUpTo(Screens.HomeScreen) {
-                                saveState = true
-                                inclusive = false
-                            }
-                            launchSingleTop = true
-                            restoreState = true
-                        }
-                    }
-                },
-                icon = {
-                    Icon(
-                        if (isSelected) item.selectedIcon else item.unSelectedIcon,
-                        contentDescription = stringResource(item.label)
-                    )
-                },
-                label = { Text(text = stringResource(item.label)) }
-            )
         }
     }
 }

@@ -29,6 +29,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -40,12 +41,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.example.labs.R
+import com.example.weatherforecast.MyApplication
 import com.example.weatherforecast.data.appPreferences.AppPreferences
-import com.example.weatherforecast.data.db.DataBaseHelper
-import com.example.weatherforecast.data.network.RetrofitHelper
-import com.example.weatherforecast.data.weather.WeatherRepo
-import com.example.weatherforecast.data.weather.dataSource.local.WeatherLocalSource
-import com.example.weatherforecast.data.weather.dataSource.remote.WeatherRemoteSource
 import com.example.weatherforecast.utils.AppConstants
 import com.example.weatherforecast.view.favoriteScreens.addToFavoriteScreen.viewModel.AddToFavoriteData
 import com.example.weatherforecast.view.favoriteScreens.addToFavoriteScreen.viewModel.AddToFavoriteState
@@ -60,26 +57,18 @@ import com.google.maps.android.compose.rememberCameraPositionState
 
 @Composable
 fun AddFavoriteScreen(navController: NavHostController) {
-    //1) show the map first DONE
-    //2) on click on the map send the location to the view model Done
-    //3) thaw will be the first property in the data class in vm Done
-    //3) on click on the map make a marker DONE
-    //4) create save btn to save to db the last latlng that he choosed by on click
+
 
     val appContext = LocalContext.current.applicationContext
-    val db = DataBaseHelper.getInstance(appContext)
-    val weatherDao = db.currentWeatherDao()
-    val forecastDao = db.forecastDao()
-    val favoriteDao = db.favoriteDao()
-    val local = WeatherLocalSource(weatherDao, forecastDao, favoriteDao)
-    val weatherService = RetrofitHelper.weatherService
-    val remote = WeatherRemoteSource(weatherService)
-    val repo = WeatherRepo(remote, local)
-    val factory = AddToFavoriteViewModelFactory(
-        appContext,
-        repo,
-        AppPreferences.getInstance(appContext)
-    )
+    val factory = remember {
+        val repo = (appContext as MyApplication).appContainer.weatherRepo
+
+        AddToFavoriteViewModelFactory(
+            appContext,
+            repo,
+            AppPreferences.getInstance(appContext)
+        )
+    }
     val vm = viewModel<AddToFavoriteViewModel>(factory = factory)
 
     MainMapScreen(vm, navController) {
@@ -148,7 +137,7 @@ fun MapScreen(vm: AddToFavoriteViewModel, data: AddToFavoriteData) {
 
     GoogleMap(
         modifier = Modifier.fillMaxSize(),
-        cameraPositionState =cameraPositionState,
+        cameraPositionState = cameraPositionState,
         onMapClick = { vm.onMapTapped(it) }
     ) {
         Marker(

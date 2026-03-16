@@ -38,6 +38,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.example.labs.R
+import com.example.weatherforecast.MyApplication
 import com.example.weatherforecast.data.appPreferences.AppPreferences
 import com.example.weatherforecast.data.db.DataBaseHelper
 import com.example.weatherforecast.data.network.RetrofitHelper
@@ -64,6 +65,7 @@ fun SettingsScreen(navController: NavHostController) {
     val factory = remember {
         SettingsViewModelFactory(AppPreferences.getInstance(context))
     }
+
     val vm: SettingsViewModel = viewModel(factory = factory)
     val selectedSourceOfLocation by vm.selectedSourceOfLocation.collectAsStateWithLifecycle()
     val uiState by vm.settingsScreenState.collectAsStateWithLifecycle()
@@ -76,44 +78,28 @@ fun SettingsScreen(navController: NavHostController) {
     }
 
     if (uiState == SettingsScreenState.Loading) {
-        Log.d(AppConstants.TAG, "Loading:.. ")
         CircularProgressIndicator()
     }
 
 
     //When the user clicks on the map option
     if (selectedSourceOfLocation == R.string.map) {
-        Log.d(AppConstants.TAG, "SettingsScreen: nav to map screen")
-
-        //======================================================
-        val appContext = LocalContext.current.applicationContext
-        val db = DataBaseHelper.getInstance(appContext)
-        val weatherDao = db.currentWeatherDao()
-        val forecastDao = db.forecastDao()
-        val favoriteDao = db.favoriteDao()
-        val local = WeatherLocalSource(weatherDao, forecastDao, favoriteDao)
-        val weatherService = RetrofitHelper.weatherService
-        val remote = WeatherRemoteSource(weatherService)
-        val repo = WeatherRepo(remote, local)
+        val repo = (context as MyApplication).appContainer.weatherRepo
         val factory = AddToFavoriteViewModelFactory(
-            appContext,
+            context,
             repo,
-            AppPreferences.getInstance(appContext)
+            AppPreferences.getInstance(context)
         )
         val addToFavoriteViewModel = viewModel<AddToFavoriteViewModel>(factory = factory)
-        //======================================================
-
         val navController = NavHostController(LocalContext.current)
+
         //reusing the this composable fun with it's own viewmodel todo search on more best way then that
         MainMapScreen(addToFavoriteViewModel, navController) {
-            Log.d(AppConstants.TAG, "ClickedOnSave: ")
             vm.onSaveLocation(it)
         }
-
     } else {
         MainContent(vm)
     }
-
 }
 
 @Composable
