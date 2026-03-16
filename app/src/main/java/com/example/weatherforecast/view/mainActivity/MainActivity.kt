@@ -93,7 +93,7 @@ class MainActivity : ComponentActivity() {
     fun manageLocationState(locationState: LocationResultStates) {
         when (locationState) {
             LocationResultStates.GpsDisabled -> {
-                if (isAsked) {
+                if (true) {
                     Toast.makeText(
                         this@MainActivity,
                         getString(R.string.please_enable_gps),

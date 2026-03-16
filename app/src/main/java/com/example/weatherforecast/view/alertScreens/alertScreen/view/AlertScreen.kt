@@ -204,8 +204,13 @@ fun AlertCard(
             )
 
             Column(modifier = Modifier.weight(1f)) {
+                val alertType = when (alert.alertType) {
+                    AlertType.TEMPERATURE -> stringResource(R.string.temperature)
+                    AlertType.WIND -> stringResource(R.string.wind)
+                    AlertType.RAIN -> stringResource(R.string.rain)
+                }
                 Text(
-                    text = alert.alertType.name,
+                    text = alertType,
                     color = Color.White,
                     fontWeight = FontWeight.Bold,
                     fontSize = 16.sp
@@ -213,18 +218,17 @@ fun AlertCard(
                 Spacer(modifier = Modifier.height(4.dp))
                 if (alert.alertType != AlertType.RAIN && alert.alertValue != null) {
                     Text(
-                        text = "Threshold: ${alert.alertValue}",
+                        text = stringResource(R.string.threshold, alert.alertValue),
                         color = Color.White.copy(alpha = 0.7f),
                         fontSize = 13.sp
                     )
                 }
                 Text(
-                    text = "From: ${alert.startTime.toDateString()} ${alert.startTime.toDateString()}",
-                    color = Color.White.copy(alpha = 0.7f),
-                    fontSize = 13.sp
-                )
-                Text(
-                    text = "To: ${alert.endTime.toDateString()} ${alert.endTime.toDateString()}",
+                    text = stringResource(
+                        R.string.alert_time,
+                        alert.startTime.toDateString(),
+                        alert.startTime.toDateString()
+                    ),
                     color = Color.White.copy(alpha = 0.7f),
                     fontSize = 13.sp
                 )

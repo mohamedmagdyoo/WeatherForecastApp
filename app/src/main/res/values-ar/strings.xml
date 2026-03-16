@@ -32,4 +32,30 @@
     <string name="notifications">الإشعارات</string>
     <string name="enable_weather_alerts">تفعيل تنبيهات الطقس</string>
     <string name="fetching_weather">جارٍ تحميل الطقس…</string>
+
+    <!-- ↓ missing strings added -->
+    <string name="no_favorite_locations_yet">لا توجد مواقع مفضلة بعد</string>
+    <string name="tap_to_add_one">اضغط + لإضافة موقع</string>
+    <string name="search_for_a_city">ابحث عن مدينة...</string>
+    <string name="search_icon">أيقونة البحث</string>
+    <string name="location_already_set_with_map">تم تحديد الموقع مسبقاً عبر الخريطة</string>
+    <string name="add_favorite">إضافة إلى المفضلة</string>
+    <string name="delete">حذف</string>
+    <string name="save">حفظ</string>
+    <string name="add">إضافة</string>
+    <string name="back">رجوع</string>
+    <string name="new_alert">تنبيه جديد</string>
+    <string name="alert_type">نوع التنبيه</string>
+    <string name="start_time">وقت البدء</string>
+    <string name="end_time">وقت الانتهاء</string>
+    <string name="alarm_type">نوع الإنذار</string>
+    <string name="end_time_must_be_after_start_time">يجب أن يكون وقت الانتهاء بعد وقت البدء</string>
+    <string name="start_time_must_be_after_time_right_now">يجب أن يكون وقت البدء بعد الوقت الحالي</string>
+    <string name="unselected_date_check_again">لم يتم تحديد التاريخ، يرجى المحاولة مجدداً</string>
+    <string name="permission_granted">تم منح الإذن</string>
+    <string name="please_grant_notification_permission_to_use_this_feature">يرجى منح إذن الإشعارات لاستخدام هذه الميزة</string>
+    <string name="alert_time">وقت التنبيه: %1$s %2$s</string>
+    <string name="threshold">الحد: %1$s</string>
+    <string name="temperature">الحراره</string>
+    <string name="rain">المطر</string>
 </resources>

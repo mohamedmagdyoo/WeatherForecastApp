@@ -21,7 +21,7 @@ class HomeViewModel(
     private val weatherRepo: WeatherRepoInterface,
     private val appPreferences: AppPreferences
 ) : ViewModel() {
-    private val _screenState = MutableStateFlow<HomeScreenState>(HomeScreenState.Loading)
+    private val _screenState = MutableStateFlow<HomeScreenState>(HomeScreenState.Error)
     val screenState = _screenState.asStateFlow()
 
 
