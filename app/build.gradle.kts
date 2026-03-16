@@ -25,6 +25,9 @@ android {
         val properties = gradleLocalProperties(rootDir, providers)
         manifestPlaceholders["MAPS_API_KEY"] = properties["MAPS_API_KEY"] ?: ""
         buildConfigField("String", "MAPS_API_KEY", "\"${properties["MAPS_API_KEY"]}\"")
+
+        manifestPlaceholders["WEATHER_API_KEY"] = properties["WEATHER_API_KEY"] ?: ""
+        buildConfigField("String", "WEATHER_API_KEY", "\"${properties["WEATHER_API_KEY"]}\"")
     }
 
     buildTypes {

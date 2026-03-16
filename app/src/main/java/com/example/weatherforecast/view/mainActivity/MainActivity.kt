@@ -33,7 +33,7 @@ import com.example.weatherforecast.data.location.LocationResultStates
 import com.example.weatherforecast.data.location.LocationService
 import com.example.weatherforecast.ui.theme.WeatherForecastTheme
 import com.example.weatherforecast.utils.AppConstants
-import com.example.weatherforecast.utils.LanguageHelper
+import com.example.weatherforecast.utils.language.LanguageHelper
 import com.example.weatherforecast.view.alertScreens.addAlertScreen.view.AddAlertScreen
 import com.example.weatherforecast.view.favoriteScreens.addToFavoriteScreen.view.AddFavoriteScreen
 import com.example.weatherforecast.view.alertScreens.alertScreen.view.AlertScreen
