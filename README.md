@@ -1,3 +1,5 @@
+<img width="800" height="500" alt="Gemini_Generated_Image_jj5ibsjj5ibsjj5i (1)" src="https://github.com/user-attachments/assets/486a192a-14cd-4190-945b-d28694d91111" />
+
 # ⛅ Weather Forecast App
 
 An Android application that displays real-time weather information based on your current location or any location you choose on the map. Built with modern Android development practices using MVVM architecture.
